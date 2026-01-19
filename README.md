@@ -12,13 +12,13 @@ Claude Code用のパーソナルスキル集。
 
 ```bash
 # 1. リポジトリをclone
-ghq get github.com/takekazu/claude-skills
+ghq get github.com/takekazuomi/claude-skills
 
 # 2. パーソナルスキルディレクトリ作成
 mkdir -p ~/.claude/skills
 
 # 3. シンボリックリンク作成
-ln -s ~/ghq/github.com/takekazu/claude-skills/go-new ~/.claude/skills/go-new
+ln -s ~/ghq/github.com/takekazuomi/claude-skills/go-new ~/.claude/skills/go-new
 ```
 
 ## 使い方
