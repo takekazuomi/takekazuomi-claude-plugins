@@ -29,11 +29,17 @@ Claude Codeで `/go-new` や `/mysql-local` コマンドを実行。
 
 ## 構造
 
-```
+```text
 claude-skills/
 ├── go-new/
 │   └── SKILL.md
 ├── mysql-local/
 │   └── SKILL.md
+├── docs/
+│   └── template-management.md  # テンプレート管理方針
 └── README.md
 ```
+
+## ドキュメント
+
+- [テンプレート管理方針](./docs/template-management.md) - スキル内のコードテンプレート管理方法
