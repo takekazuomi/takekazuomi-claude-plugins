@@ -12,6 +12,7 @@ Claude Code用のパーソナルスキル集。各スキルは `~/.claude/skills
 claude-skills/
 ├── go-new/SKILL.md       # 新規Goプロジェクト初期化スキル
 ├── mysql-local/SKILL.md  # ローカルテスト用MySQLコンテナ追加スキル
+├── pr-workflow/SKILL.md  # PR作成ワークフロースキル
 └── README.md
 ```
 

@@ -8,6 +8,7 @@ Claude Code用のパーソナルスキル集。
 |--------|------|
 | [go-new](./go-new/SKILL.md) | 新規Goプロジェクトの初期化 |
 | [mysql-local](./mysql-local/SKILL.md) | ローカルテスト用MySQLコンテナ追加 |
+| [pr-workflow](./pr-workflow/SKILL.md) | Plan単位でPRを作成するワークフロー |
 
 ## セットアップ
 
@@ -21,11 +22,12 @@ mkdir -p ~/.claude/skills
 # 3. シンボリックリンク作成
 ln -s ~/ghq/github.com/takekazuomi/claude-skills/go-new ~/.claude/skills/go-new
 ln -s ~/ghq/github.com/takekazuomi/claude-skills/mysql-local ~/.claude/skills/mysql-local
+ln -s ~/ghq/github.com/takekazuomi/claude-skills/pr-workflow ~/.claude/skills/pr-workflow
 ```
 
 ## 使い方
 
-Claude Codeで `/go-new` や `/mysql-local` コマンドを実行。
+Claude Codeで `/go-new`、`/mysql-local`、`/pr-workflow` コマンドを実行。
 
 ## 構造
 
@@ -34,6 +36,8 @@ claude-skills/
 ├── go-new/
 │   └── SKILL.md
 ├── mysql-local/
+│   └── SKILL.md
+├── pr-workflow/
 │   └── SKILL.md
 ├── docs/
 │   └── template-management.md  # テンプレート管理方針
