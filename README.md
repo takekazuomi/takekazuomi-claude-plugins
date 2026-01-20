@@ -31,5 +31,11 @@ Claude Codeで `/go-new` コマンドを実行。
 claude-skills/
 ├── go-new/
 │   └── SKILL.md
+├── docs/
+│   └── template-management.md  # テンプレート管理方針
 └── README.md
 ```
+
+## ドキュメント
+
+- [テンプレート管理方針](./docs/template-management.md) - スキル内のコードテンプレート管理方法
