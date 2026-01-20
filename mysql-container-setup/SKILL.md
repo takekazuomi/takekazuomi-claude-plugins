@@ -1,9 +1,9 @@
 ---
-name: mysql-local
-description: Goプロジェクトにローカルテスト用MySQLコンテナを追加。docker-compose.yml、初期化SQL、Makefileターゲットを作成。
+name: mysql-container-setup
+description: Goプロジェクトにローカルテスト用MySQLコンテナを追加。docker-compose.yml、初期化SQL、.envrc.sample、Makefileターゲット（db-up/down/logs/client/clean）を作成。DBを使うGoアプリ開発開始時に使用。
 ---
 
-# mysql-local
+# mysql-container-setup
 
 Goプロジェクトにローカル開発用MySQLコンテナを追加するスキル。
 

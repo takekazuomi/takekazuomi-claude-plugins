@@ -1,9 +1,9 @@
 ---
-name: go-new
-description: 新規Goプロジェクトの初期化。go mod init、Makefile、README.md、.gitignore、.golangci.ymlを作成。
+name: go-project-scaffold
+description: 新規Goプロジェクトの初期化。go mod init、Makefile、README.md、.gitignore、.golangci.yml（all linters有効）を作成。ghqディレクトリでのプロジェクト開始時に使用。
 ---
 
-# go-new
+# go-project-scaffold
 
 新規Goプロジェクトの初期化スキル。
 

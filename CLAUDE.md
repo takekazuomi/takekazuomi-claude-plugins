@@ -10,10 +10,10 @@ Claude Code用のパーソナルスキル集。各スキルは `~/.claude/skills
 
 ```
 claude-skills/
-├── bash-new/SKILL.md     # 新規bashスクリプト作成スキル
-├── go-new/SKILL.md       # 新規Goプロジェクト初期化スキル
-├── mysql-local/SKILL.md  # ローカルテスト用MySQLコンテナ追加スキル
-├── pr-workflow/SKILL.md  # PR作成ワークフロースキル
+├── bash-script-template/SKILL.md   # 新規bashスクリプト作成スキル
+├── go-project-scaffold/SKILL.md    # 新規Goプロジェクト初期化スキル
+├── mysql-container-setup/SKILL.md  # ローカルテスト用MySQLコンテナ追加スキル
+├── pr-workflow/SKILL.md            # PR作成ワークフロースキル
 └── README.md
 ```
 
@@ -23,6 +23,12 @@ claude-skills/
 2. frontmatterに `name` と `description` を記述
 3. README.mdのスキル一覧テーブルに追加
 4. シンボリックリンク: `ln -s ~/ghq/github.com/takekazuomi/claude-skills/<スキル名> ~/.claude/skills/<スキル名>`
+
+## スキル命名規則
+
+- 形式: kebab-case（小文字+ハイフン）
+- パターン: 名詞形式（`noun-noun`）
+- 例: `bash-script-template`, `go-project-scaffold`, `mysql-container-setup`
 
 ## SKILL.mdフォーマット
 

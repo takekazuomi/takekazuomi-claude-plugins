@@ -6,10 +6,10 @@ Claude Code用のパーソナルスキル集。
 
 | スキル | 説明 |
 |--------|------|
-| [bash-new](./bash-new/SKILL.md) | 新規bashスクリプトの作成 |
-| [go-new](./go-new/SKILL.md) | 新規Goプロジェクトの初期化 |
-| [mysql-local](./mysql-local/SKILL.md) | ローカルテスト用MySQLコンテナ追加 |
-| [pr-workflow](./pr-workflow/SKILL.md) | Plan単位でPRを作成するワークフロー |
+| [bash-script-template](./bash-script-template/SKILL.md) | 新規bashスクリプトの作成 |
+| [go-project-scaffold](./go-project-scaffold/SKILL.md) | 新規Goプロジェクトの初期化 |
+| [mysql-container-setup](./mysql-container-setup/SKILL.md) | ローカルテスト用MySQLコンテナ追加 |
+| [pr-workflow](./pr-workflow/SKILL.md) | worktree作成からPR作成までのワークフロー |
 
 ## セットアップ
 
@@ -21,25 +21,25 @@ ghq get github.com/takekazuomi/claude-skills
 mkdir -p ~/.claude/skills
 
 # 3. シンボリックリンク作成
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/bash-new ~/.claude/skills/bash-new
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/go-new ~/.claude/skills/go-new
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/mysql-local ~/.claude/skills/mysql-local
+ln -s ~/ghq/github.com/takekazuomi/claude-skills/bash-script-template ~/.claude/skills/bash-script-template
+ln -s ~/ghq/github.com/takekazuomi/claude-skills/go-project-scaffold ~/.claude/skills/go-project-scaffold
+ln -s ~/ghq/github.com/takekazuomi/claude-skills/mysql-container-setup ~/.claude/skills/mysql-container-setup
 ln -s ~/ghq/github.com/takekazuomi/claude-skills/pr-workflow ~/.claude/skills/pr-workflow
 ```
 
 ## 使い方
 
-Claude Codeで `/bash-new`、`/go-new`、`/mysql-local`、`/pr-workflow`コマンドを実行。
+Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-container-setup`、`/pr-workflow`コマンドを実行。
 
 ## 構造
 
 ```text
 claude-skills/
-├── bash-new/
+├── bash-script-template/
 │   └── SKILL.md
-├── go-new/
+├── go-project-scaffold/
 │   └── SKILL.md
-├── mysql-local/
+├── mysql-container-setup/
 │   └── SKILL.md
 ├── pr-workflow/
 │   └── SKILL.md
