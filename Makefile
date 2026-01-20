@@ -9,7 +9,7 @@ MAKEFLAGS += --no-print-directory
 
 SKILLS_DIR := $(HOME)/.claude/skills
 REPO_DIR := $(shell pwd)
-SKILLS := bash-new go-new mysql-local pr-workflow
+SKILLS := bash-script-template go-project-scaffold mysql-container-setup pr-workflow
 
 .PHONY: help
 help: ## ヘルプ表示

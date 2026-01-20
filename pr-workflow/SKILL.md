@@ -1,11 +1,19 @@
 ---
 name: pr-workflow
-description: Plan単位でPRを作成するワークフロースキル
+description: worktree作成からPR作成まで一貫実行するワークフロー。ブランチ作成、実装、lint/test、PRサマリー作成を段階的に実施。機能追加やバグ修正でPRを作成する際に使用。
 ---
 
 # pr-workflow
 
 worktree作成からPR作成まで一貫して実行するワークフロー。
+
+## いつ使うか
+
+- 新機能の追加時（feature/ブランチ）
+- バグ修正時（fix/ブランチ）
+- リファクタリング時（refactor/ブランチ）
+
+**注意**: 単純な1コミット修正では使用せず、直接mainブランチで作業可能。
 
 ## 使用方法
 

@@ -1,16 +1,16 @@
 ---
-name: bash-new
-description: 新規bashスクリプトの作成。bash best practiceに準拠したテンプレートを生成。
+name: bash-script-template
+description: 新規bashスクリプトの作成。set -euo pipefail、die関数、mainパターンを含むテンプレート生成。シェルスクリプトを新規作成する際に使用。
 ---
 
-# bash-new
+# bash-script-template
 
 新規bashスクリプトを作成する。
 
 ## 使用方法
 
 ```
-/bash-new <ファイル名>
+/bash-script-template <ファイル名>
 ```
 
 ## 引数
