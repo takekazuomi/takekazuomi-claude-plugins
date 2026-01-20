@@ -6,6 +6,7 @@ Claude Code用のパーソナルスキル集。
 
 | スキル | 説明 |
 |--------|------|
+| [bash-new](./bash-new/SKILL.md) | 新規bashスクリプトの作成 |
 | [go-new](./go-new/SKILL.md) | 新規Goプロジェクトの初期化 |
 | [mysql-local](./mysql-local/SKILL.md) | ローカルテスト用MySQLコンテナ追加 |
 
@@ -19,18 +20,21 @@ ghq get github.com/takekazuomi/claude-skills
 mkdir -p ~/.claude/skills
 
 # 3. シンボリックリンク作成
+ln -s ~/ghq/github.com/takekazuomi/claude-skills/bash-new ~/.claude/skills/bash-new
 ln -s ~/ghq/github.com/takekazuomi/claude-skills/go-new ~/.claude/skills/go-new
 ln -s ~/ghq/github.com/takekazuomi/claude-skills/mysql-local ~/.claude/skills/mysql-local
 ```
 
 ## 使い方
 
-Claude Codeで `/go-new` や `/mysql-local` コマンドを実行。
+Claude Codeで `/bash-new`、`/go-new`、`/mysql-local` コマンドを実行。
 
 ## 構造
 
 ```text
 claude-skills/
+├── bash-new/
+│   └── SKILL.md
 ├── go-new/
 │   └── SKILL.md
 ├── mysql-local/
