@@ -27,7 +27,8 @@ claude-skills/
 1. `<スキル名>/SKILL.md` を作成
 2. frontmatterに `name` と `description` を記述
 3. README.mdのスキル一覧テーブルに追加
-4. シンボリックリンク: `ln -s ~/ghq/github.com/takekazuomi/claude-skills/<スキル名> ~/.claude/skills/<スキル名>`
+4. MakefileのSKILLS変数にスキル名を追加
+5. `make install` でインストール
 
 ## スキル命名規則
 
