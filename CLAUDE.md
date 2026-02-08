@@ -8,12 +8,17 @@ Claude Code用のパーソナルスキル集。各スキルは `~/.claude/skills
 
 ## 構造
 
-```
+```text
 claude-skills/
-├── bash-script-template/SKILL.md   # 新規bashスクリプト作成スキル
-├── go-project-scaffold/SKILL.md    # 新規Goプロジェクト初期化スキル
-├── mysql-container-setup/SKILL.md  # ローカルテスト用MySQLコンテナ追加スキル
-├── pr-workflow/SKILL.md            # PR作成ワークフロースキル
+├── bash-script-template/SKILL.md      # 新規bashスクリプト作成スキル
+├── go-project-scaffold/SKILL.md       # 新規Goプロジェクト初期化スキル
+├── mysql-container-setup/SKILL.md     # ローカルテスト用MySQLコンテナ追加スキル
+├── pr-workflow/SKILL.md               # PR作成ワークフロースキル
+├── go-pr-review/                      # Go専用PRレビュースキル
+│   ├── SKILL.md
+│   └── docs/
+│       ├── idiomatic-go.md            # Idiomatic Goガイド
+│       └── go-internal-package-debate.md  # internal パッケージ議論
 └── README.md
 ```
 

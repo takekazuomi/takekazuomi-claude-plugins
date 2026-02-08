@@ -9,7 +9,7 @@ Claude Codeスキル作成時のコードテンプレート管理方法（Markdo
 ### 公式推奨（code.claude.com/docs/en/skills.md）
 
 | 方法 | 利用場面 | トークン効率 | メンテナンス性 |
-|------|---------|------------|--------------|
+| ------ | --------- | ------------ | -------------- |
 | **Markdownコードブロック** | <200行のテンプレート | 中程度 | 高い（一箇所管理） |
 | **別ファイル（参照）** | 詳細ドキュメント、リファレンス | 高い（需要時読込） | 高い |
 | **スクリプト bundled** | テンプレート生成、複雑な変換処理 | 最高（実行のみ） | 良い |
@@ -24,19 +24,21 @@ Claude Codeスキル作成時のコードテンプレート管理方法（Markdo
 
 ### テンプレートサイズ別の推奨
 
-**小規模（<200行）: Markdownコードブロック**
+#### 小規模（<200行）: Markdownコードブロック
+
 - コンテキスト内に完全に含まれる
 - Claudeがすぐに実行できる
 - 環境構築が不要
 
-**大規模（>200行）: 別ファイル化**
+#### 大規模（>200行）: 別ファイル化
+
 - `scripts/` ディレクトリにスクリプト配置
 - SKILL.mdから実行コマンドのみ記載
 - トークン効率が向上
 
 ### 公式の複雑スキル例（codebase-visualizer）
 
-```
+```text
 my-skill/
 ├── SKILL.md (overview - 500行以下)
 ├── reference.md (詳細ドキュメント)
@@ -46,16 +48,19 @@ my-skill/
 ```
 
 SKILL.mdでの参照方法：
-```markdown
+
+````markdown
 Run the visualization script:
+
 ```bash
 python ~/.claude/skills/codebase-visualizer/scripts/visualize.py .
 ```
-```
+````
 
 ## 現状のプロジェクト評価
 
 ### go-new スキル（~207行）
+
 - Makefileテンプレート：~52行
 - README.mdテンプレート：~27行
 - .gitignoreテンプレート：~11行
@@ -64,6 +69,7 @@ python ~/.claude/skills/codebase-visualizer/scripts/visualize.py .
 **評価: 適切** - 各テンプレートが200行未満
 
 ### mysql-local スキル（~152行）
+
 - docker-compose.yml：~27行
 - 初期化SQL：~12行
 - .envrc.sample：~7行
@@ -73,7 +79,7 @@ python ~/.claude/skills/codebase-visualizer/scripts/visualize.py .
 
 ## 結論
 
-**現在のアプローチ（Markdownコードブロック）は公式推奨に沿っている**
+現在のアプローチ（Markdownコードブロック）は公式推奨に沿っている。
 
 - 各テンプレートが200行未満のため、コードブロックが適切
 - SKILL.md全体も500行以下でパフォーマンス基準を満たす
@@ -83,7 +89,7 @@ python ~/.claude/skills/codebase-visualizer/scripts/visualize.py .
 
 テンプレートが大規模化した場合：
 
-```
+```text
 mysql-local/
 ├── SKILL.md (概要と基本手順)
 ├── examples/
@@ -95,5 +101,5 @@ mysql-local/
 
 ## 参考ドキュメント
 
-- Skillsガイド: https://code.claude.com/docs/en/skills.md
+- Skillsガイド: <https://code.claude.com/docs/en/skills.md>
 - Progressive Disclosure: 公式ドキュメントの「Add supporting files」セクション
