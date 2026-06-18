@@ -2,23 +2,50 @@
 
 Go 風（Idiomatic Go）とは、Go の設計思想に沿った、自然で読みやすく保守しやすいコードを書くことである。このガイドは公式ドキュメント・Go 設計者の発言・コミュニティのベストプラクティスを原典として構成している。
 
-> **TL;DR** — Clarity > Simplicity > Concision > Maintainability > Consistency の優先度で設計する。エラーは値として扱い、インターフェースは小さく消費側で定義し、ゼロ値を活用する。可変なグローバル状態を避け、goroutine のライフサイクルを管理し、gofmt を無条件に適用する。
+> **TL;DR** — Clarity > Simplicity > Explicitness > Robustness > Concision > Locality > Maintainability > Testability > Minimal API Surface > Consistency の優先度で設計する。エラーは値として扱い、インターフェースは小さく消費側で定義し、ゼロ値を活用する。可変なグローバル状態を避け、goroutine のライフサイクルを管理し、gofmt を無条件に適用する。
 
 ---
 
 ## 1. 設計原則（Style Principles）
 
-Google Go Style Guide [^1] が定義する 5 つの原則を、優先度順に示す。
+Google Go Style Guide [^1] と Uber Go Style Guide [^8] を軸に、10 の原則を優先度順に示す。原則 1, 2, 5, 7, 10 は Google [^1]、原則 3, 4, 6, 8 は Uber [^8] および Cheney [^3]、原則 9 は Pike [^2] を主な出典とする。原則間で矛盾が生じた場合は、番号が小さい（優先度が高い）原則を優先する。
 
-1. **Clarity（明快さ）** — コードの目的と根拠が読み手に明確であること
-2. **Simplicity（単純さ）** — 目的を最も単純な方法で達成すること
-3. **Concision（簡潔さ）** — シグナル対ノイズ比が高いこと
-4. **Maintainability（保守性）** — 将来の変更に耐えること
-5. **Consistency（一貫性）** — 既存コードベースとの統一
+| # | 原則 | 説明 | 主な出典 |
+|---|------|------|----------|
+| 1 | **Clarity（明快さ）** | コードの目的と根拠が読み手に明確であること | Google [^1] |
+| 2 | **Simplicity（単純さ）** | 目的を最も単純な方法で達成すること | Google [^1] |
+| 3 | **Explicitness（明示性）** | 暗黙の動作を排し、制御フローを明示すること | Uber [^8], Cheney [^3] |
+| 4 | **Robustness（堅牢性）** | 異常系でもプログラムの制御を失わないこと | Uber [^8], Pike [^2] |
+| 5 | **Concision（簡潔さ）** | シグナル対ノイズ比が高いこと | Google [^1] |
+| 6 | **Locality（局所性）** | 変数のスコープを最小化し、定義と使用を近づけること | Uber [^8], Cheney [^3] |
+| 7 | **Maintainability（保守性）** | 将来の変更に耐えること | Google [^1], Cheney [^3] |
+| 8 | **Testability（テスト容易性）** | テスト可能な設計にすること | Uber [^8], Cheney [^3] |
+| 9 | **Minimal API Surface（最小APIサーフェス）** | 公開APIを必要最小限に保つこと | Pike [^2] |
+| 10 | **Consistency（一貫性）** | 既存コードベースとの統一 | Google [^1] |
+
+10 原則は 3 つの層で構成される。
+
+1. **思考の基盤**（1-2）: Clarity, Simplicity — 全設計判断の起点
+2. **Go の特徴的選択**（3-6）: Explicitness, Robustness, Concision, Locality — Go らしさを決定づける原則
+3. **長期・構造的品質**（7-10）: Maintainability, Testability, Minimal API Surface, Consistency — アーキテクチャレベルの制約
+
+### 追加原則の選定基準
+
+Google [^1] の 5 原則に加え、Uber [^8]・Pike [^2]・Cheney [^3] から 5 原則を選定した理由を以下に示す。
+
+- **Explicitness（明示性）** — Go 最大の特徴であるエラーハンドリングの明示性。Uber [^8] は `init()` 回避も規定。コミュニティで最も議論されるトピック
+- **Robustness（堅牢性）** — Uber [^8]「Don't Panic」、Pike [^2] 格言「Don't panic.」。本番サービスの信頼性に直結
+- **Locality（局所性）** — Uber [^8]「Reduce Scope of Variables」、Cheney [^3]「Return early」。可読性の実践的改善として広く支持
+- **Testability（テスト容易性）** — Uber [^8]「Avoid Mutable Globals」の主目的がテスト容易性。DI パターンの根拠
+- **Minimal API Surface（最小APIサーフェス）** — Pike [^2]「The bigger the interface, the weaker the abstraction.」。インターフェース設計の議論で頻出
+
+### 原則の背景
 
 Rob Pike は「Clear is better than clever」と述べており [^2]、「Go at Google」[^10] ではソフトウェア工学の観点から Go の設計判断を解説している。特にこの講演で Pike は「The key point here is our programmers are Googlers, they're not researchers」と述べ、Go が研究者ではなく実務のソフトウェアエンジニアのために設計された言語であることを明確にした。Clarity が最優先される根拠はここにある。
 
-Dave Cheney は The Zen of Go [^3] で「最終的なゴールは maintainability だ」と結論づけている。
+Dave Cheney は The Zen of Go [^3] で「最終的なゴールは maintainability だ」と結論づけている。Cheney の原則は Explicitness（「Each function should do one thing」）、Locality（「Return early rather than nesting deeply」）、Testability（「Design for testing」）として本ガイドの原則 3, 6, 8 に反映されている。
+
+Uber Go Style Guide [^8] は、Uber 社内の Go コードベースを統一するために策定されたガイドラインであり、GitHub で 50,000 以上のスターを獲得している。Google [^1] が「何を目指すか」を定義するのに対し、Uber [^8] は「何を避けるべきか」をアンチパターンとして具体的に示す点に特徴がある。本ガイドの原則 3（Explicitness）、4（Robustness）、6（Locality）、8（Testability）は、Uber のアンチパターン集から抽出した設計原則である。
 
 ## 2. Go Proverbs — 19 の格言
 
