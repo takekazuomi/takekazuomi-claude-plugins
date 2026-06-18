@@ -1,4 +1,4 @@
-# claude-skills
+# takekazuomi-claude-plugins
 
 Claude Code用のパーソナルスキル集。
 
@@ -22,21 +22,21 @@ Claude Code用のパーソナルスキル集。
 このリポジトリは marketplace 構造を持ち、各スキルを独立した plugin として配布。利用側プロジェクトの Claude Code で marketplace を登録し、必要なスキルを個別に導入。
 
 ```text
-/plugin marketplace add takekazuomi/claude-skills
-/plugin install <skill>@claude-skills
+/plugin marketplace add takekazuomi/takekazuomi-claude-plugins
+/plugin install <skill>@takekazuomi-claude-plugins
 ```
 
-- プロジェクトのメンバー全員に共有する場合は `--scope project` を付与（例: `/plugin install writing-style@claude-skills --scope project`）。
+- プロジェクトのメンバー全員に共有する場合は `--scope project` を付与（例: `/plugin install writing-style@takekazuomi-claude-plugins --scope project`）。
 - 一覧確認: `claude plugin list --json --available`、または `/plugin` の Discover タブ。
-- `*@claude-skills` のようなワイルドカード一括導入は非対応。必要なスキルを個別に指定。
+- `*@takekazuomi-claude-plugins` のようなワイルドカード一括導入は非対応。必要なスキルを個別に指定。
 
 ### 方法B: make install で導入（開発・個人グローバル向け）
 
 `make install` で全スキルを `~/.claude/skills/` にシンボリックリンク。symlink なのでスキル編集が即反映され、開発時に便利。
 
 ```bash
-ghq get github.com/takekazuomi/claude-skills
-cd ~/ghq/github.com/takekazuomi/claude-skills
+ghq get github.com/takekazuomi/takekazuomi-claude-plugins
+cd ~/ghq/github.com/takekazuomi/takekazuomi-claude-plugins
 make install
 ```
 
@@ -56,7 +56,7 @@ Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-contai
 ## 構造
 
 ```text
-claude-skills/
+takekazuomi-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json                # marketplace カタログ（全 plugin を列挙）
 ├── plugins/                            # 各スキル = 独立 plugin
