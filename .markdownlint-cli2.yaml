@@ -3,5 +3,7 @@ ignores:
 
 config:
   MD013: false
+  # 長いpluginパス+日本語説明が混在するテーブルでは厳密な桁揃えが非現実的なため無効化
+  MD060: false
   MD024:
     siblings_only: true

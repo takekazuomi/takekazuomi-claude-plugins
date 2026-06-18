@@ -1,0 +1,6 @@
+{
+  "name": "writing-style",
+  "description": "日本語文書の文体適用（casual/formal切替）",
+  "version": "0.1.0",
+  "author": { "name": "takekazuomi" }
+}

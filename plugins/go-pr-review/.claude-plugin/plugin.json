@@ -1,0 +1,6 @@
+{
+  "name": "go-pr-review",
+  "description": "Go専用PRレビュー",
+  "version": "0.1.0",
+  "author": { "name": "takekazuomi" }
+}

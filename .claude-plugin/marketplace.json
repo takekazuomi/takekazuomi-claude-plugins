@@ -1,0 +1,14 @@
+{
+  "name": "claude-skills",
+  "description": "takekazuomi のパーソナルスキル集（bash/Go/PR/文体など）",
+  "owner": { "name": "takekazuomi" },
+  "metadata": { "pluginRoot": "./plugins" },
+  "plugins": [
+    { "name": "bash-script-template", "source": "./bash-script-template", "description": "新規bashスクリプトの作成" },
+    { "name": "go-project-scaffold", "source": "./go-project-scaffold", "description": "新規Goプロジェクトの初期化" },
+    { "name": "go-pr-review", "source": "./go-pr-review", "description": "Go専用PRレビュー" },
+    { "name": "mysql-container-setup", "source": "./mysql-container-setup", "description": "ローカルテスト用MySQLコンテナ追加" },
+    { "name": "pr-workflow", "source": "./pr-workflow", "description": "worktree作成からPR作成までのワークフロー" },
+    { "name": "writing-style", "source": "./writing-style", "description": "日本語文書の文体適用（casual/formal切替）" }
+  ]
+}

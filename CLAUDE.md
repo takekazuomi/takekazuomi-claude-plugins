@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## リポジトリ概要
 
-Claude Code用のパーソナルスキル集。各スキルは `~/.claude/skills/` にシンボリックリンクを作成して使用。
+Claude Code用のパーソナルスキル集。リポジトリ自体が marketplace 構造を持ち、各スキルを独立した plugin として配布（`/plugin install <skill>@claude-skills`）。あわせて開発・個人グローバル用に `~/.claude/skills/` へのシンボリックリンク（`make install`）も併用可能。
 
 ## 構造
 
@@ -12,11 +12,13 @@ Claude Code用のパーソナルスキル集。各スキルは `~/.claude/skills
 
 ## スキルの追加方法
 
-1. `<スキル名>/SKILL.md` を作成
+1. `plugins/<スキル名>/skills/<スキル名>/SKILL.md` を作成
 2. frontmatterに `name` と `description` を記述
-3. README.mdのスキル一覧テーブルに追加
-4. MakefileのSKILLS変数にスキル名を追加
-5. `make install` でインストール
+3. `plugins/<スキル名>/.claude-plugin/plugin.json` を作成（`name`・`description`・`version`）
+4. `.claude-plugin/marketplace.json` の `plugins` 配列にエントリ追加（`name`・`source`・`description`）
+5. README.mdのスキル一覧テーブルと構造ツリーに追加
+6. MakefileのSKILLS変数にスキル名を追加
+7. 検証: `claude plugin validate .`、`make install` でインストール確認
 
 ## スキル命名規則
 
