@@ -11,27 +11,33 @@ Claude Code用のパーソナルスキル集。
 | [mysql-container-setup](./mysql-container-setup/SKILL.md) | ローカルテスト用MySQLコンテナ追加        |
 | [pr-workflow](./pr-workflow/SKILL.md)                     | worktree作成からPR作成までのワークフロー |
 | [go-pr-review](./go-pr-review/SKILL.md)                   | Go専用PRレビュー                         |
+| [writing-style](./writing-style/SKILL.md)                 | 日本語文書の文体適用（casual/formal切替）|
 
 ## セットアップ
+
+`make install` で全スキルを `~/.claude/skills/` にシンボリックリンク。
 
 ```bash
 # 1. リポジトリをclone
 ghq get github.com/takekazuomi/claude-skills
+cd ~/ghq/github.com/takekazuomi/claude-skills
 
-# 2. パーソナルスキルディレクトリ作成
-mkdir -p ~/.claude/skills
-
-# 3. シンボリックリンク作成
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/bash-script-template ~/.claude/skills/bash-script-template
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/go-project-scaffold ~/.claude/skills/go-project-scaffold
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/mysql-container-setup ~/.claude/skills/mysql-container-setup
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/pr-workflow ~/.claude/skills/pr-workflow
-ln -s ~/ghq/github.com/takekazuomi/claude-skills/go-pr-review ~/.claude/skills/go-pr-review
+# 2. 全スキルをインストール
+make install
 ```
+
+### Makefileターゲット
+
+| ターゲット       | 説明                           |
+| ---------------- | ------------------------------ |
+| `make install`   | 全スキルをインストール         |
+| `make uninstall` | 全スキルをアンインストール     |
+| `make list`      | インストール状態を表示         |
+| `make help`      | ヘルプ表示                     |
 
 ## 使い方
 
-Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-container-setup`、`/pr-workflow`、`/go-pr-review`コマンドを実行。
+Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-container-setup`、`/pr-workflow`、`/go-pr-review`、`/writing-style`コマンドを実行。
 
 ## 構造
 
@@ -48,10 +54,25 @@ claude-skills/
 ├── go-pr-review/
 │   ├── SKILL.md
 │   └── docs/
-│       ├── idiomatic-go.md
-│       └── go-internal-package-debate.md
+│       ├── idiomatic-go.md             # Idiomatic Goガイド
+│       ├── go-internal-package-debate.md  # internal パッケージ議論
+│       ├── doc.md                      # ドキュメント連動チェック観点（作成中）
+│       └── sql.md                      # SQL変更時の注意点（作成中）
+├── writing-style/
+│   ├── SKILL.md                        # ルーター（文書種別を判定しスタイル適用）
+│   ├── styles/
+│   │   ├── common.md                   # 共通コア（全スタイル共通）
+│   │   ├── casual.md                   # レポート/ブログ/Zenn向け
+│   │   └── formal.md                   # 仕様書/技術文書向け
+│   └── scripts/
+│       └── wordcount.sh                # 文字数・原稿用紙換算
 ├── docs/
-│   └── template-management.md  # テンプレート管理方針
+│   ├── template-management.md          # テンプレート管理方針
+│   ├── idea.md                         # アイデアメモ
+│   └── skills/
+│       └── writing-style.md            # writing-styleスキルの保守ガイド
+├── Makefile
+├── CLAUDE.md
 └── README.md
 ```
 
