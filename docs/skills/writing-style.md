@@ -59,12 +59,6 @@ casual と formal は文体が正反対（砕け↔正確さ優先）。progress
 - **チェックリストの追加** → 共通なら common、種別固有なら該当 style の「固有チェックリスト」へ。
 - 変更後は `npx markdownlint-cli2 "writing-style/**/*.md"` でlintを通す（リポジトリ規約）。
 
-## 出典の元ファイル（再生成・照合用）
-
-- casual の母体: 旧 `docs/WRITING_STYLE.md`（スキル化に伴い削除済み。git履歴で参照可）＋ 著者提示の SKILL.md 案
-- formal の母体: `github.com/plusmedi/mhv2-nextv3` の `docs/rules/WRITING_STYLE.md`
-- 両者の差分分析から common/casual/formal を分割した
-
 ## なぜスキル外（docs/）に置くか
 
 このガイドは「スキルを実行するときには不要、更新するときだけ要る」情報。スキル実行時のコンテキストに載せたくない。
