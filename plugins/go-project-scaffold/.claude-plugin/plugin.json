@@ -1,0 +1,6 @@
+{
+  "name": "go-project-scaffold",
+  "description": "新規Goプロジェクトの初期化",
+  "version": "0.1.0",
+  "author": { "name": "takekazuomi" }
+}

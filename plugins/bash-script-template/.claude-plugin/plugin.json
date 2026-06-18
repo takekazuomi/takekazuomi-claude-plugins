@@ -1,0 +1,6 @@
+{
+  "name": "bash-script-template",
+  "description": "新規bashスクリプトの作成",
+  "version": "0.1.0",
+  "author": { "name": "takekazuomi" }
+}

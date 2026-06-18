@@ -22,7 +22,7 @@ install: ## 全スキルをインストール
 		if [ -L "$(SKILLS_DIR)/$$skill" ]; then \
 			echo "既存: $$skill"; \
 		else \
-			ln -s "$(REPO_DIR)/$$skill" "$(SKILLS_DIR)/$$skill"; \
+			ln -s "$(REPO_DIR)/plugins/$$skill/skills/$$skill" "$(SKILLS_DIR)/$$skill"; \
 			echo "インストール: $$skill"; \
 		fi \
 	done

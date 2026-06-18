@@ -1,0 +1,6 @@
+{
+  "name": "pr-workflow",
+  "description": "worktree作成からPR作成までのワークフロー",
+  "version": "0.1.0",
+  "author": { "name": "takekazuomi" }
+}
