@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## リポジトリ概要
 
-Claude Code用のパーソナルスキル集。リポジトリ自体が marketplace 構造を持ち、各スキルを独立した plugin として配布（`/plugin install <skill>@takekazuomi-claude-plugins`）。あわせて開発・個人グローバル用に `~/.claude/skills/` へのシンボリックリンク（`make install`）も併用可能。
+Claude Code用のスキル集。プロジェクトに導入しチームで共有して使う。リポジトリ自体が marketplace 構造を持ち、各スキルを独立した plugin として配布（`/plugin install <skill>@takekazuomi-claude-plugins`、チーム共有は `--scope project`）。あわせて開発用に `~/.claude/skills/` へのシンボリックリンク（`make install`）も併用可能。
 
 ## 構造
 

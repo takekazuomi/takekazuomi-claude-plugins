@@ -1,11 +1,28 @@
 # コミット・PR作成の許可制 × writing style 連携 — 実現方式の検討
 
-`docs/ideas.md` のアイディア3を具体化するための検討メモ。採用案は未確定。公式機能と欧米・中国のコミュニティ議論を根拠に、5案を比較する。
+`docs/ideas.md` のアイディア3を具体化するための設計メモ。公式機能と欧米・中国のコミュニティ議論を根拠に5案を比較した結果、**案5（ハイブリッド: PreToolUse hook で強制 ＋ writing-style スキルで文体）を採用**する。本メモは採用の設計と、採用に至った比較検討の記録を残す。
+
+> 実装（plugin の `hooks/hooks.json`・スクリプト作成等）は別タスク。本メモは設計と方針の記録。
 
 ## やりたいこと
 
 - Claude Code（AI）が `git commit` / `git push` / `gh pr create` を勝手に実行するのを禁止し、ユーザーの許可を挟む
 - コミットメッセージ・PR 本文のドラフトを writing style spec（formal）に従って `./tmp/` に出力する
+
+## 採用決定: 案5（ハイブリッド）
+
+検討の結果、**案5（PreToolUse hook で許可制を強制 ＋ writing-style スキルで文体を担保）を採用**する。
+
+> 位置づけ: これは**プロジェクト共有スキル**として作る。各プロジェクトに plugin を入れ、project スコープ（`.claude/settings.json`、git でチーム共有）で**チーム全員に適用**することを前提とする。個人専用ツールではない。
+
+採用理由:
+
+- **確実性**: hook が `git commit`/`git push`/`gh pr create` を実行前に捕捉し許可を求める。指示（CLAUDE.md）と違い回避されにくい
+- **文体品質**: ドラフトを writing-style の formal で清書し、コミット/PR 文の品質を担保
+- **配布性・チーム適用**: hook と関連設定を1つの plugin に同梱でき、`/plugin install` で自動有効化。project スコープで配布すれば**チーム全員に同じ許可制を強制**できる。本リポジトリの marketplace 構造にそのまま乗る
+- **過剰防御の回避**: 不可逆操作（force push / PR merge）まで hook で抱え込まず、それらは CI + branch protection に委ねる。承認疲れを避け、決定論的な壁を少数に絞る
+
+実装の方向性・5案の比較根拠は後述。
 
 ## hook の用語明確化（重要）
 
@@ -45,7 +62,9 @@ PreToolUse hook は marketplace plugin に同梱して配布できる（公式�
 
 → 「hook は設定が複雑で配布しづらい」という従来評価は、plugin 同梱・install で自動有効化により大きく緩和される。
 
-## 5案の比較
+## 5案の比較（採用に至った検討記録）
+
+採用は案5。以下は採用に至った比較と、各案を選ばなかった理由の記録。
 
 | 案 | 強制力 | 手軽さ | ドラフト出力 | カバーしない bypass | 概要 |
 |---|---|---|---|---|---|
@@ -53,7 +72,7 @@ PreToolUse hook は marketplace plugin に同梱して配布できる（公式�
 | 案2 permissions のみ | 中 | 高 | 別手段が必要 | `-m` 後方のフラグ、長チェーン無効化 | settings.json で ask/deny |
 | 案3 PreToolUse hook | 高 | 中 | hook 内で生成 | Claude 外の git、絶対パス呼出 | コマンド検出ゲート |
 | 案4 多層防御 | 最高 | 最低 | hook + ラッパー | 設定弱体化（要・設定保護） | deny + ラッパー + hook + CI |
-| 案5 ハイブリッド ★推奨 | 高 | 中 | hook + スキル | Claude 外の git | hook 強制 + writing-style 文体 |
+| 案5 ハイブリッド ★採用 | 高 | 中 | hook + スキル | Claude 外の git | hook 強制 + writing-style 文体 |
 
 ### 案1: ソフト運用スキル（pr-workflow 拡張）
 
@@ -78,15 +97,24 @@ PreToolUse hook は marketplace plugin に同梱して配布できる（公式�
 
 - `git`/`gh` を全 deny、許可リスト方式のラッパースクリプトのみ allow、hook で worktree/機密/危険コマンド検査、CI + branch protection を最終ゲート。PR merge/close は意図的に非提供で人間に強制
 - 強制力は最高。手軽さは最低（保守コスト大）。設定ファイル自体の保護（CODEOWNERS）まで要る
-- #40117 を踏まえると確実性は最も高いが、個人スキル集の配布物としては重い
+- #40117 を踏まえると確実性は最も高い。プロジェクト共有スキルなら多層防御＋CI 連携は品質保証として正当化されうるが、ラッパー保守・設定保護のコストが大きい
 
-### 案5: ハイブリッド（hook で強制 ＋ writing-style スキルで文体）★推奨
+### 案5: ハイブリッド（hook で強制 ＋ writing-style スキルで文体）★採用
 
 - 強制レイヤ＝案3の hook（ask + tmp ドラフトの雛形生成）。文体レイヤ＝`writing-style` の formal でドラフトを清書。permissions.ask で二重化して補強
 - 強制力は高。文体品質も担保。役割分離が明快（hook＝ゲート、スキル＝文体）
-- **具体形**: hook（`hooks/hooks.json` + `scripts/*.sh`）と writing-style 連携を**1つの plugin に同梱して配布**できる。install で hook が自動有効化されるため、利用者の設定作業はほぼ不要
-- 署名抑止は `attribution` 設定を併記。PR の merge/close は hook で渡さず人間に残す
 - 「スキルが良いか hook が良いか」の問いへの答え＝両方。hook で確実性、スキルで文体・配布性
+
+#### 実装の方向性（実装は別タスク）
+
+1 つの plugin に hook と関連設定を同梱して配布する。
+
+- **plugin 構成**: `plugins/<name>/hooks/hooks.json` ＋ `plugins/<name>/scripts/*.sh`（`${CLAUDE_PLUGIN_ROOT}` で参照）。`/plugin install` で hook が自動有効化されるため、利用者の設定作業はほぼ不要
+- **hook の挙動**: `git commit`/`git push`/`gh pr create` を検出 → `tmp/` にドラフト雛形を生成 → `permissionDecision: "ask"` を返して許可を求める
+- **ドラフト清書**: 雛形を `writing-style` の formal（体言止め・正確さ優先）で清書。既存 `pr-workflow` の `tmp/commit-msg.md`・`tmp/pr-summary.md` 出力を土台に再利用
+- **二重化と補強**: `permissions.ask` に `Bash(git commit*)` `Bash(git push*)` `Bash(gh pr create*)` を併記。署名抑止は `attribution: { commit: "", pr: "" }` 設定を併用
+- **バイパス検査**: `--no-verify`/`-n`/`git stash`/quiet フラグを hook で検査（`block-no-verify` 流用可）
+- **人間に残す境界**: PR の merge/close は hook で渡さない。force push 等の不可逆操作は CI + branch protection に委ねる
 
 ## 地域差の所見
 
@@ -94,13 +122,20 @@ PreToolUse hook は marketplace plugin に同梱して配布できる（公式�
 - **中国**: 「修復成本（修復コスト）で権限層を決める」体系的フレーム（読取=allow / 編集=ask / 不可逆=deny）。`updatedInput` での自動書き換えなどプログラマブル制御に踏み込む。一方で全自動 push する手軽派と厳格审批派に二極化
 - **両圏共通**: 「自動 pull 可・自動 push 不可・Draft PR」が定番。**署名禁止の需要が両圏で強く、本リポジトリの CLAUDE.md 方針（Claude シグニチャーを入れない）と一致**
 
-## 推奨
+## 採用方針と段階導入
 
-案5（ハイブリッド）を軸に、まず案1（ソフト運用スキル）から着手する段階導入。
+採用は案5（ハイブリッド）。段階導入で進める。
 
-- pr-workflow + writing-style 連携（案1）で運用を固め、確実性が必要な利用者向けに hook（案3）を **plugin 同梱**で配る。permissions（案2）と `attribution` 設定は「オプトインの設定例」として `docs/` に添える
+- まず案1相当（`pr-workflow` + `writing-style` 連携）で運用を固め、続けて hook（案3）を **plugin 同梱**で載せて案5を完成させる。permissions.ask（案2）と `attribution` 設定は案5に組み込む
 - 過剰防御は承認疲れ（約93%承認）で逆効果。決定論的な壁を少数に絞る
-- 本当に止めたい不可逆操作（force push / PR merge）は CI + branch protection に委ねるのが筋。案4 のフルセットは個人スキル集にはやり過ぎ
+- 不可逆操作（force push / PR merge）は CI + branch protection に委ねる
+
+### 各案を採らなかった理由
+
+- **案1単独**: 指示ベースで回避されうる（#40117）。許可制の「強制」を保証できない
+- **案2単独**: 前方一致の穴・長チェーンでの deny 無効化があり、ドラフト出力もできない。案5に内包する形で活用
+- **案3単独**: 確実だが文体担保がない。writing-style と組むことで案5になる
+- **案4**: 最も確実で、プロジェクト共有スキルなら検討に値する。ただしラッパー＋設定保護＋CI 統合まで要し保守コストが大きい。案5（hook + 文体）で許可制と品質担保は必要十分で、不可逆操作は CI + branch protection に分担できるため、現段階では案4まで広げない
 
 ## 参考リンク
 
