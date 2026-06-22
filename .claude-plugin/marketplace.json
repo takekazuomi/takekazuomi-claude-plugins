@@ -1,6 +1,6 @@
 {
   "name": "takekazuomi-claude-plugins",
-  "description": "takekazuomi のパーソナルスキル集（bash/Go/PR/文体など）",
+  "description": "プロジェクトで共有する Claude Code スキル集（bash/Go/PR/文体など）",
   "owner": { "name": "takekazuomi" },
   "plugins": [
     { "name": "bash-script-template", "source": "./plugins/bash-script-template", "description": "新規bashスクリプトの作成" },

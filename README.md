@@ -1,6 +1,6 @@
 # takekazuomi-claude-plugins
 
-Claude Code用のパーソナルスキル集。
+Claude Code用のスキル集。プロジェクトに導入し、チームで共有して使う。
 
 ## スキル一覧
 
@@ -30,7 +30,7 @@ Claude Code用のパーソナルスキル集。
 - 一覧確認: `claude plugin list --json --available`、または `/plugin` の Discover タブ。
 - `*@takekazuomi-claude-plugins` のようなワイルドカード一括導入は非対応。必要なスキルを個別に指定。
 
-### 方法B: make install で導入（開発・個人グローバル向け）
+### 方法B: make install で導入（開発向け・ローカル symlink）
 
 `make install` で全スキルを `~/.claude/skills/` にシンボリックリンク。symlink なのでスキル編集が即反映され、開発時に便利。
 
