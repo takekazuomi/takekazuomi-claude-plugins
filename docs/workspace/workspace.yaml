@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=../workspace.schema.json
+#
+# マルチリポ・コーディングワークスペースの定義。
+# 設計原則:
+#   - 「定義(what)」だけを持つ。clone 先などの「場所(where)」は持たない（ユーザーごとに ghq が解決）。
+#   - ロールは固定 enum ではなく、このワークスペースが作成時に宣言する自由語彙。
+#   - リポは識別子(URL)で指す。SHA で revision を固定して再現性を持たせる。
+#   - 単一ワークスペースディレクトリは作らない（ghq がフラットに配置）。
+
+schemaVersion: 1
+workspace: payments               # DNS ラベル形式（小文字英数と -）。ワークスペース識別子。
+description: 決済ドメインのマルチリポ・ワークスペース
+
+# 作成時に決めたロール語彙。このプロジェクト固有で、グローバル共通の enum ではない。
+# repos[].role はここに宣言された id のいずれかでなければならない（Go バリデータが検証）。
+roles:
+  - id: source
+    description: マイクロサービス本体
+  - id: api-definition
+    description: proto / IDL 定義
+  - id: documentation
+    description: 仕様・設計ドキュメント
+  - id: app
+    description: スマホアプリ
+
+repos:
+  - name: payment-service                       # 短い一意なエイリアス。関係/スキル束縛で参照する。
+    repo: github.com/acme/payment-service        # ghq 解決可能な識別子。絶対パスも clone 先も書かない。
+    role: source                                 # roles[].id のいずれか。
+    revision: 7f3a9c2e1b4d5a6f8c9e0a1b2c3d4e5f6a7b8c9d  # SHA で固定（再現性）。
+  - name: payment-proto
+    repo: github.com/acme/payment-proto
+    role: api-definition
+    revision: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0
+  - name: payment-docs
+    repo: github.com/acme/payment-docs
+    role: documentation
+    optional: true                               # 既定の setup では clone しない（repo の notdefault 相当）。
+  - name: payment-app
+    repo: github.com/acme/payment-app
+    role: app
+    revision: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2
+
+# リポ間の役割関係（Backstage の dependsOn 系に相当）。from/to は repos[].name を参照。
+relationships:
+  - from: payment-app
+    to: payment-service
+    type: consumes
+  - from: payment-service
+    to: payment-proto
+    type: implements
+
+# 「何をするとき、どのスキルか」。use はインストール済みプラグインのスキル。
+# roles を付けると、そのロールのリポを扱うときに効くという意図を表せる（任意）。
+skills:
+  - when: go-review
+    use: go-pr-review@takekazuomi-claude-plugins
+    roles: [source]
+  - when: scaffold
+    use: go-project-scaffold@takekazuomi-claude-plugins
+    roles: [source]

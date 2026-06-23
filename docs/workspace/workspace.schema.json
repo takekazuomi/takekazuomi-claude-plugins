@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/takekazuomi/takekazuomi-claude-plugins/workspaces/workspace.schema.json",
+  "title": "Workspace",
+  "description": "マルチリポ・コーディングワークスペースの定義。場所(clone先)は持たない。ロールは作成時に宣言する自由語彙。注意: 参照整合性(repos[].role が roles[].id のいずれかであること、relationships の端点が repos[].name に存在すること 等)は標準JSON Schemaでは表現できないため、別途 Go バリデータ(validate-workspace)で検証する。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "roles", "repos"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "description": "スキーマのメジャーバージョン。互換性のため固定。"
+    },
+    "workspace": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+      "description": "ワークスペース識別子。DNSラベル形式(小文字英数と -)。"
+    },
+    "description": {
+      "type": "string"
+    },
+    "roles": {
+      "type": "array",
+      "minItems": 1,
+      "description": "このワークスペースが宣言するロール語彙。固定enumではなく作成時に決める。",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+            "description": "ロール識別子。id の一意性は Go バリデータで検証。"
+          },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "repos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "repo", "role"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+            "description": "短い一意なエイリアス。relationships/skills から参照する。"
+          },
+          "repo": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ghq解決可能な識別子(host/user/repo)またはgit URL。絶対パス/clone先は書かない。形式の妥当性は Go バリデータで検証。"
+          },
+          "role": {
+            "type": "string",
+            "description": "roles[].id のいずれか。参照整合は Go バリデータで検証。"
+          },
+          "revision": {
+            "type": "string",
+            "description": "固定SHA推奨(再現性)。ブランチ名らしき値は Go バリデータが警告する。"
+          },
+          "optional": {
+            "type": "boolean",
+            "default": false,
+            "description": "trueなら既定の setup では clone しない(repo の notdefault 相当)。"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to", "type"],
+        "properties": {
+          "from": { "type": "string", "description": "repos[].name のいずれか(Go バリデータで検証)。" },
+          "to": { "type": "string", "description": "repos[].name のいずれか(Go バリデータで検証)。" },
+          "type": { "type": "string", "description": "関係の種類(consumes/implements/documents 等。自由形式)。" }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["use"],
+        "properties": {
+          "when": { "type": "string" },
+          "use": { "type": "string", "description": "インストール済みプラグインのスキル(例: go-pr-review@takekazuomi-claude-plugins)。" },
+          "roles": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "roles[].id の部分集合(Go バリデータで検証)。"
+          }
+        }
+      }
+    }
+  }
+}
