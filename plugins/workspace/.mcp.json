@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "workspace": {
+      "type": "stdio",
+      "command": "${CLAUDE_PLUGIN_DATA}/bin/workspace-mcp",
+      "args": ["--manifest", "${CLAUDE_PROJECT_DIR}/workspace.yaml"]
+    }
+  }
+}

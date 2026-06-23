@@ -8,6 +8,7 @@
     { "name": "go-pr-review", "source": "./plugins/go-pr-review", "description": "Go専用PRレビュー" },
     { "name": "mysql-container-setup", "source": "./plugins/mysql-container-setup", "description": "ローカルテスト用MySQLコンテナ追加" },
     { "name": "pr-workflow", "source": "./plugins/pr-workflow", "description": "worktree作成からPR作成までのワークフロー" },
+    { "name": "workspace", "source": "./plugins/workspace", "description": "マルチリポ・ワークスペースの定義・所在解決・検証を行う MCP サーバ" },
     { "name": "writing-style", "source": "./plugins/writing-style", "description": "日本語文書の文体適用（casual/formal切替）" }
   ]
 }

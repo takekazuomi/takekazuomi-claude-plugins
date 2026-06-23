@@ -1,0 +1,5 @@
+# 作業用ディレクトリ
+tmp/
+
+# プラグイン同梱の .mcp.json はグローバル ignore(.mcp.json) の対象外とし、コミットする
+!plugins/**/.mcp.json

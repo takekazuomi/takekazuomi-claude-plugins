@@ -11,6 +11,7 @@ Claude Code用のスキル集。プロジェクトに導入し、チームで共
 | [mysql-container-setup](./plugins/mysql-container-setup/skills/mysql-container-setup/SKILL.md) | ローカルテスト用MySQLコンテナ追加        |
 | [pr-workflow](./plugins/pr-workflow/skills/pr-workflow/SKILL.md)                              | worktree作成からPR作成までのワークフロー |
 | [go-pr-review](./plugins/go-pr-review/skills/go-pr-review/SKILL.md)                           | Go専用PRレビュー                         |
+| [workspace](./plugins/workspace/skills/workspace/SKILL.md)                                    | マルチリポ・ワークスペースの定義・所在解決・検証（MCP）|
 | [writing-style](./plugins/writing-style/skills/writing-style/SKILL.md)                        | 日本語文書の文体適用（casual/formal切替）|
 
 ## セットアップ
@@ -51,7 +52,7 @@ make install
 
 ## 使い方
 
-Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-container-setup`、`/pr-workflow`、`/go-pr-review`、`/writing-style`コマンドを実行。
+Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-container-setup`、`/pr-workflow`、`/go-pr-review`、`/workspace`、`/writing-style`コマンドを実行。
 
 ## 構造
 
@@ -77,12 +78,23 @@ takekazuomi-claude-plugins/
 │   ├── pr-workflow/
 │   │   ├── .claude-plugin/plugin.json
 │   │   └── skills/pr-workflow/SKILL.md
-│   └── writing-style/
+│   ├── writing-style/
+│   │   ├── .claude-plugin/plugin.json
+│   │   └── skills/writing-style/
+│   │       ├── SKILL.md                # ルーター（文書種別を判定しスタイル適用）
+│   │       ├── styles/                 # common/casual/formal
+│   │       └── scripts/wordcount.sh    # 文字数・原稿用紙換算
+│   └── workspace/                      # MCP プラグイン（Go バイナリは外部取得）
 │       ├── .claude-plugin/plugin.json
-│       └── skills/writing-style/
-│           ├── SKILL.md                # ルーター（文書種別を判定しスタイル適用）
-│           ├── styles/                 # common/casual/formal
-│           └── scripts/wordcount.sh    # 文字数・原稿用紙換算
+│       ├── .mcp.json                   # MCP サーバ定義
+│       ├── hooks/                      # SessionStart でバイナリを取得
+│       └── skills/workspace/SKILL.md
+├── mcp/                                # workspace-mcp のソース（Go モジュール）
+│   ├── pkg/workspace/                  # モデル・検証・所在解決
+│   └── workspace/                      # main（MCP サーバ＋validate＋--print-paths）
+├── workspaces/                         # ワークスペース定義の例とスキーマ
+│   ├── workspace.schema.json
+│   └── payments/workspace.yaml
 ├── docs/                               # リポジトリ文書
 │   ├── template-management.md          # テンプレート管理方針
 │   ├── idea.md                         # アイデアメモ
