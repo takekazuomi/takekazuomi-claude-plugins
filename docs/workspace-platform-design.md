@@ -230,20 +230,39 @@ CI ゲートは `workspace-mcp validate <file>` サブコマンドを使う（MC
 - **ネイティブに存在**: 単一ツリーのモノレポ対応（nested CLAUDE.md、ツリー遡上）、プラグイン/マーケットプレイス、MCP（`--scope project` で `.mcp.json` 共有）、`--add-dir`、フック、設定の階層
 - **合成して作る**: 「複数の独立 Git リポを束ねるワークスペース」という単位そのもの、所在解決（ghq）、関連リポの clone、ワークスペース知識の供給（MCP）
 - **反証・限界（重要）**:
-  - **Claude Code にマルチリポ・ワークスペースのネイティブ構造はない**（issue #44656 は未実装）。設定のワークスペース継承もない（各リポ独立、https://www.iamraghuveer.com/posts/shared-claude-settings-across-repos/ ）。
+  - **Claude Code にマルチリポ・ワークスペースのネイティブ構造はない**（issue #44656 は未実装、別要望 #35362「`claude --workspace repo-a repo-b`」は Closed・未実装、https://github.com/anthropics/claude-code/issues/35362 ）。設定のワークスペース継承もない（各リポ独立、https://www.iamraghuveer.com/posts/shared-claude-settings-across-repos/ ）。
+  - **公式 Desktop の「workspace」（2026-04-14 再設計）は別概念**。単一リポ内の N 並列セッション＋セッションごと git worktree であり、複数リポを束ねる単位ではない（名前は衝突するが対象が異なる）。
   - **エージェントは `--add-dir` を自分で実行できない**（スラッシュコマンドはエージェントから呼べない）。だから起動時 `--print-paths` 経路が要になる。これは設計上の制約として残る。
   - `--add-dir` でディレクトリを増やすほど検索範囲が広がり効率が落ちる（https://blog.vincentqiao.com/en/posts/claude-code-add-dir/ ）。ロールで絞って必要なリポだけ足す。
   - ghq 多重 root 時の主ルート解決は本基盤では解決しない。リポごとのブランチ管理は Overlay（§5）で一時差し替えのみ扱い、恒常的なブランチ運用は各リポに委ねる。
   - Overlay の worktree は最小実装では手動作成・手動クリーンアップ。MCP 自動化（`setup_overlay`）は未実装（§10）。
 - **流動的**: `env.json` 的なネイティブ・マルチリポ構造の採否（#44656）は追跡対象。採用されれば橋渡しの一部は不要になりうる。
 
+### 8.1 既存の類似実装との対比
+
+マルチリポを束ねる既存物との位置づけ。「近さ」は一軸では測れず、**層（アーキ）で近い実装と形態（出荷物）で近い実装が異なる**。各実装は「実行」「共通ツリー」「知識層」のどれか1つに寄り、本基盤の3軸分離（Definition/Placement/Overlay）＋意味モデル（roles/relationships/skills）を同時に扱う設計は確認できなかった。
+
+| 実装 | 形態 | マニフェスト | 所在解決 | アーキ層 | 供給単位 | 本基盤との差 |
+|---|---|---|---|---|---|---|
+| **Black Dog Labs MCP**（https://blackdoglabs.io/blog/claude-code-decoded-multi-repo-context ） | TS 参考実装（リリース物なし） | `~/.multi-repo-config.json`（name + **path** + `type`） | **path を直書き** | **知識層（MCP）★同層** | **symbol**（load_symbol / trace_dependency） | `type`＝service/library/contracts は**ロールの固定enum版**（D3 が退ける側の実例）。供給がパスでなく symbol（`--add-dir` と逆思想）。共有・clone・overlay・relationship宣言なし、個人の home 設定でクエリ時最適化に閉じる |
+| **ttal**（tta-lab/ttal-cli, https://github.com/tta-lab/ttal-cli ） | **単一バイナリ★同形態** | `~/.config/ttal/projects.toml`（name + **path**） | **path を直書き** | 実行オーケストレータ（別カテゴリ） | worktree | D2 と逆（Placement を焼く）。意味層（role/relationship/skill）なし。本基盤が責務外とする実行自動化（manager/worker 2面・Telegram）が主眼 |
+| **repo-registry MCP**（iamraghuveer） | MCP | レジストリ | MCP がクエリ | 知識層（MCP） | パス/メタデータ | 本基盤 MCP 層の祖型。意味モデルと Overlay は持たない |
+| **bootstrap-repo**（karun.me） | 共通親リポ | リポ内マニフェスト＋context＋tasks | 親ツリー配下 | 共通ツリー | ツリー文脈 | D4 と逆（ネストを作る派）。共通親が無い前提の本基盤とは出発点が逆 |
+
+**要点（二分して読む）**:
+
+- **層・問題意識で最も近いのは Black Dog Labs MCP**。本基盤の中核「ワークスペース定義＝MCP の組み合わせ」と同じ知識層（§4）に同居し、`type`（service/library/contracts）というロール相当を持つ。ただし供給単位が symbol であってパスでない点、共有・clone・overlay・relationship宣言を欠く点で機構は逆向き。その固定 `type` enum は、D3（ロールを自由語彙＋検証にする）が退ける側の具体例として引ける。
+- **出荷形態で最も近いのは ttal**。実際に出荷された単一バイナリ＋リポ集合を登録するマニフェスト、という成果物の形が一致。ただしアーキ層は本基盤が責務外とする実行オーケストレータで、知識層ではない。
+- 両者とも所在を **path 直書き**（D2 と逆）で、本基盤は ghq 解決で焼かない。この対比が「なぜ Definition/Placement を分離するか（D2）」「なぜ MCP が知識層として必須化するか（D5）」の正当化を補強する。
+
 ---
 
 ## 9. 参照（信頼階層: 公式 → 公式issue/当事者 → 実装 → 解説）
 
-- Claude Code: plugins-reference / settings / memory / large-codebases（https://code.claude.com/docs/en/ ）、issue #44656・#21138・#23404・#45323、go-sdk（https://github.com/modelcontextprotocol/go-sdk ）
+- Claude Code: plugins-reference / settings / memory / large-codebases（https://code.claude.com/docs/en/ ）、issue #44656・#35362・#21138・#23404・#45323、go-sdk（https://github.com/modelcontextprotocol/go-sdk ）
 - マニフェスト系: Zephyr west（https://docs.zephyrproject.org/latest/develop/west/ ）、Android repo（https://gerrit.googlesource.com/git-repo/+/master/docs/manifest-format.md ）、`go.work`（https://go.dev/ref/mod#workspaces ）、VS Code multi-root（https://code.visualstudio.com/docs/editing/workspaces/ ）
-- 知識層: Backstage software catalog（https://backstage.io/docs/features/software-catalog/ ）、iamraghuveer repo-registry MCP（https://www.iamraghuveer.com/posts/multi-repo-workspace-claude-code/ ）、karun.me bootstrap-repo（https://karun.me/blog/2026/03/26/structuring-claude-code-for-multi-repo-workspaces/ ）
+- 知識層: Backstage software catalog（https://backstage.io/docs/features/software-catalog/ ）、iamraghuveer repo-registry MCP（https://www.iamraghuveer.com/posts/multi-repo-workspace-claude-code/ ）、karun.me bootstrap-repo（https://karun.me/blog/2026/03/26/structuring-claude-code-for-multi-repo-workspaces/ ）、Black Dog Labs Multi-Repo Context Loading（https://blackdoglabs.io/blog/claude-code-decoded-multi-repo-context ）
+- 類似実装: ttal / tta-lab（https://github.com/tta-lab/ttal-cli 、解説 https://dev.to/neil_agentic/how-i-manage-15-repos-with-claude-code-without-losing-my-mind-2ood ）
 - ツール: ghq（https://github.com/x-motemen/ghq ）、Ajv/JSON Schema（https://ajv.js.org/json-schema.html ）
 - 背景レポート: `workspace-definition-3plans.md`（3案の比較、本ドキュメントの前段）
 
