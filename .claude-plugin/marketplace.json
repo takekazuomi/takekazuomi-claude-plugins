@@ -6,6 +6,7 @@
     { "name": "bash-script-template", "source": "./plugins/bash-script-template", "description": "新規bashスクリプトの作成" },
     { "name": "go-project-scaffold", "source": "./plugins/go-project-scaffold", "description": "新規Goプロジェクトの初期化" },
     { "name": "go-pr-review", "source": "./plugins/go-pr-review", "description": "Go専用PRレビュー" },
+    { "name": "memo-capture", "source": "./plugins/memo-capture", "description": "見つけた知見・アイディアを共通メモリポジトリに残す" },
     { "name": "mysql-container-setup", "source": "./plugins/mysql-container-setup", "description": "ローカルテスト用MySQLコンテナ追加" },
     { "name": "pr-workflow", "source": "./plugins/pr-workflow", "description": "worktree作成からPR作成までのワークフロー" },
     { "name": "workspace", "source": "./plugins/workspace", "description": "マルチリポ・ワークスペースの定義・所在解決・検証を行う MCP サーバ" },

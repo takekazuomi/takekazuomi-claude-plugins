@@ -13,6 +13,7 @@ Claude Code用のスキル集。プロジェクトに導入し、チームで共
 | [go-pr-review](./plugins/go-pr-review/skills/go-pr-review/SKILL.md)                           | Go専用PRレビュー                         |
 | [workspace](./plugins/workspace/skills/workspace/SKILL.md)                                    | マルチリポ・ワークスペースの定義・所在解決・検証（MCP）|
 | [writing-style](./plugins/writing-style/skills/writing-style/SKILL.md)                        | 日本語文書の文体適用（casual/formal切替）|
+| [memo-capture](./plugins/memo-capture/skills/memo-capture/SKILL.md)                           | 見つけた知見・アイディアを共通メモリポジトリに残す |
 
 ## セットアップ
 
@@ -52,7 +53,7 @@ make install
 
 ## 使い方
 
-Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-container-setup`、`/pr-workflow`、`/go-pr-review`、`/workspace`、`/writing-style`コマンドを実行。
+Claude Codeで `/bash-script-template`、`/go-project-scaffold`、`/mysql-container-setup`、`/pr-workflow`、`/go-pr-review`、`/workspace`、`/writing-style`、`/memo-capture`コマンドを実行。
 
 ## 構造
 
@@ -72,6 +73,9 @@ takekazuomi-claude-plugins/
 │   │   └── skills/go-pr-review/
 │   │       ├── SKILL.md
 │   │       └── docs/                   # Idiomatic Go等の補助ドキュメント
+│   ├── memo-capture/
+│   │   ├── .claude-plugin/plugin.json
+│   │   └── skills/memo-capture/SKILL.md
 │   ├── mysql-container-setup/
 │   │   ├── .claude-plugin/plugin.json
 │   │   └── skills/mysql-container-setup/SKILL.md
@@ -99,6 +103,7 @@ takekazuomi-claude-plugins/
 │   ├── template-management.md          # テンプレート管理方針
 │   ├── idea.md                         # アイデアメモ
 │   └── skills/
+│       ├── memo-capture.md             # memo-captureスキルの保守ガイド
 │       └── writing-style.md            # writing-styleスキルの保守ガイド
 ├── Makefile
 ├── CLAUDE.md
