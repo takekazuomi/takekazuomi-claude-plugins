@@ -7,18 +7,28 @@ SKILLS = "bash-script-template go-project-scaffold go-pr-review memo-capture mys
 
 [tasks.install]
 quiet = true
-description = "全スキルを ~/.claude/skills へ symlink で導入"
+description = "全スキルを ~/.claude/skills へ symlink で導入（実行した作業ツリーを指すよう張り替える）"
 run = """
 skills_dir="${SKILLS_DIR:-$HOME/.claude/skills}"
 mkdir -p "$skills_dir"
+failed=0
 for skill in $SKILLS; do
-  if [ -L "$skills_dir/$skill" ]; then
-    echo "既存: $skill"
+  target="{{config_root}}/plugins/$skill/skills/$skill"
+  link="$skills_dir/$skill"
+  if [ -L "$link" ]; then
+    current="$(readlink "$link")"
+    [ "$current" = "$target" ] && continue
+    # -n は必須。付けないと、既存リンクの指す先ディレクトリの中にリンクを作る
+    ln -sfn "$target" "$link"
+    echo "張り替え: $skill ($current)"
+  elif [ -e "$link" ]; then
+    echo "エラー: $link は symlink ではない。手動で確認" >&2
+    failed=1
   else
-    ln -s "{{config_root}}/plugins/$skill/skills/$skill" "$skills_dir/$skill"
-    echo "インストール: $skill"
+    ln -s "$target" "$link"
   fi
 done
+exit $failed
 """
 
 [tasks.uninstall]

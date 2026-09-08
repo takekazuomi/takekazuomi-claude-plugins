@@ -36,6 +36,8 @@ Claude Code用のスキル集。プロジェクトに導入し、チームで共
 
 `mise run install` で全スキルを `~/.claude/skills/` にシンボリックリンク。symlink なのでスキル編集が即反映され、開発時に便利。
 
+リンク先は **実行したディレクトリ**（`mise.toml` のある場所）。worktree で実行すればその worktree を指す。既存のリンクが別の場所を指していれば張り替え、変更があったスキルだけを表示する。symlink 以外の実体が置かれている場合は触らずにエラーとして報告する。
+
 ```bash
 ghq get github.com/takekazuomi/takekazuomi-claude-plugins
 cd ~/ghq/github.com/takekazuomi/takekazuomi-claude-plugins
@@ -46,7 +48,7 @@ mise run install
 
 | タスク | 説明 |
 | ---------------- | ------------------------------ |
-| `mise run install`   | 全スキルをインストール             |
+| `mise run install`   | 全スキルをインストール（実行した作業ツリーへ張り替え） |
 | `mise run uninstall` | 全スキルをアンインストール         |
 | `mise run list`      | インストール状態を表示             |
 | `mise run lint`      | Markdown の lint（markdownlint + textlint） |
