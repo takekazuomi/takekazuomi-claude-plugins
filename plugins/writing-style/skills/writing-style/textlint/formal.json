@@ -1,0 +1,17 @@
+{
+  "//": "formal（技術文書）用。styles/formal.md の規定を機械化する。無効化・調整の根拠は docs/skills/writing-style.md を参照",
+  "//options": "ルールにオプションを渡すとプリセットの既定値は上書きで消える。severity だけ変える場合も既定値を書き直すこと",
+  "rules": {
+    "preset-ja-technical-writing": {
+      "ja-no-mixed-period": false,
+      "no-exclamation-question-mark": false,
+      "sentence-length": { "max": 150 },
+      "no-mix-dearu-desumasu": { "preferInBody": "である" },
+      "no-doubled-joshi": { "min_interval": 1, "allow": ["も"], "severity": "warning" },
+      "max-comma": { "max": 3, "severity": "warning" },
+      "max-ten": { "max": 3, "severity": "warning" },
+      "max-kanji-continuous-len": { "max": 6, "severity": "warning" }
+    },
+    "no-kangxi-radicals": true
+  }
+}

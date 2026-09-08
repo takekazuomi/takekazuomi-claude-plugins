@@ -3,3 +3,6 @@ tmp/
 
 # プラグイン同梱の .mcp.json はグローバル ignore(.mcp.json) の対象外とし、コミットする
 !plugins/**/.mcp.json
+
+# Node の依存（textlint / markdownlint）
+node_modules/

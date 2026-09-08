@@ -1,0 +1,57 @@
+[tools]
+node = "24"
+
+[env]
+# 対象スキル一覧。install / uninstall / list が参照する
+SKILLS = "bash-script-template go-project-scaffold go-pr-review memo-capture mysql-container-setup pr-workflow workspace writing-style"
+
+[tasks.install]
+quiet = true
+description = "全スキルを ~/.claude/skills へ symlink で導入"
+run = """
+skills_dir="${SKILLS_DIR:-$HOME/.claude/skills}"
+mkdir -p "$skills_dir"
+for skill in $SKILLS; do
+  if [ -L "$skills_dir/$skill" ]; then
+    echo "既存: $skill"
+  else
+    ln -s "{{config_root}}/plugins/$skill/skills/$skill" "$skills_dir/$skill"
+    echo "インストール: $skill"
+  fi
+done
+"""
+
+[tasks.uninstall]
+quiet = true
+description = "全スキルの symlink を削除"
+run = """
+skills_dir="${SKILLS_DIR:-$HOME/.claude/skills}"
+for skill in $SKILLS; do
+  if [ -L "$skills_dir/$skill" ]; then
+    rm "$skills_dir/$skill"
+    echo "削除: $skill"
+  fi
+done
+"""
+
+[tasks.list]
+quiet = true
+description = "スキルのインストール状態を表示"
+run = """
+skills_dir="${SKILLS_DIR:-$HOME/.claude/skills}"
+for skill in $SKILLS; do
+  if [ -L "$skills_dir/$skill" ]; then
+    echo "[インストール済] $skill"
+  else
+    echo "[未インストール] $skill"
+  fi
+done
+"""
+
+[tasks.lint]
+quiet = true
+description = "Markdown の lint（markdownlint + textlint）"
+run = [
+  "npx --no-install markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+  "npx --no-install textlint --config plugins/writing-style/skills/writing-style/textlint/formal.json $(git ls-files '*.md')",
+]
