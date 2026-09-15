@@ -15,7 +15,8 @@ description: >-
 ## 前提
 
 - `workspace.yaml` をプロジェクトルートに置く（`.mcp.json` が `${CLAUDE_PROJECT_DIR}/workspace.yaml` を指す）
-- バイナリ `workspace-mcp` は `SessionStart` フックが `${CLAUDE_PLUGIN_DATA}/bin` に用意する（GitHub Releases、無ければ `go install`）
+- バイナリ `workspace-mcp` は `SessionStart` フックが `go install` で取得し、`${CLAUDE_PLUGIN_DATA}/bin` に置く。取得済みなら再取得しない。バージョンは環境変数 `WORKSPACE_MCP_VERSION`（既定 `latest`）で指定する
+- Go ツールチェーンがインストール済みであること（GitHub Releases からの取得は未実装）
 - ghq がインストール済みであること
 
 ## MCP ツール
