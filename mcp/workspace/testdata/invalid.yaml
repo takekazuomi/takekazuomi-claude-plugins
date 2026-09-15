@@ -1,0 +1,12 @@
+schemaVersion: 1
+workspace: broken
+roles:
+  - id: source
+repos:
+  - name: svc
+    repo: github.com/acme/svc
+    role: ghost          # roles に宣言されていない → 参照整合エラー
+relationships:
+  - from: svc
+    to: missing          # repos に存在しない → エラー
+    type: consumes

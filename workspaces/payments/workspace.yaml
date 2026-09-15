@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=../workspace.schema.json
+#
+# マルチリポ・コーディングワークスペースの定義（作業セット型）。
+# 設計原則:
+#   - 「定義(what)」だけを持つ。clone 先などの「場所(where)」は持たない（ユーザーごとに ghq が解決）。
+#   - ロールは固定 enum ではなく、このワークスペースが作成時に宣言する自由語彙。
+#   - revision は追跡ブランチの指定。無指定はデフォルトブランチ。再現性は持たない
+#     （再現性は各リポの git tag / go.sum が担う）。
+#   - 一時的な差し替えは workspace.local.yaml（Overlay、非コミット）で行う。
+
+schemaVersion: 1
+workspace: payments               # DNS ラベル形式。ワークスペース識別子。
+description: 決済ドメインのマルチリポ・ワークスペース
+
+# 作成時に決めたロール語彙。このプロジェクト固有で、グローバル共通の enum ではない。
+roles:
+  - id: source
+    description: マイクロサービス本体
+  - id: api-definition
+    description: proto / IDL 定義
+  - id: documentation
+    description: 仕様・設計ドキュメント
+  - id: app
+    description: スマホアプリ
+
+repos:
+  - name: payment-service                     # 短い一意なエイリアス。関係/スキル束縛で参照する。
+    repo: github.com/acme/payment-service      # ghq 解決可能な識別子。絶対パスも clone 先も書かない。
+    role: source                               # roles[].id のいずれか。
+    # revision 無指定 = デフォルトブランチを追跡。
+  - name: payment-proto
+    repo: github.com/acme/payment-proto
+    role: api-definition
+  - name: payment-docs
+    repo: github.com/acme/payment-docs
+    role: documentation
+    optional: true                             # 既定の setup では clone しない。
+  - name: payment-app
+    repo: github.com/acme/payment-app
+    role: app
+
+# リポ間の役割関係。from/to は repos[].name を参照する。
+relationships:
+  - from: payment-app
+    to: payment-service
+    type: consumes
+  - from: payment-service
+    to: payment-proto
+    type: implements
+
+# 「何をするとき、どのスキルか」。use はインストール済みプラグインのスキル。
+skills:
+  - when: go-review
+    use: go-pr-review@takekazuomi-claude-plugins
+    roles: [source]
+  - when: scaffold
+    use: go-project-scaffold@takekazuomi-claude-plugins
+    roles: [source]

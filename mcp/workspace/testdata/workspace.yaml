@@ -1,0 +1,37 @@
+schemaVersion: 1
+workspace: payments
+description: シナリオテスト用ワークスペース
+roles:
+  - id: source
+    description: マイクロサービス本体
+  - id: api-definition
+    description: proto / IDL 定義
+  - id: documentation
+    description: 仕様・設計ドキュメント
+  - id: app
+    description: スマホアプリ
+repos:
+  - name: payment-service
+    repo: github.com/acme/payment-service
+    role: source
+  - name: payment-proto
+    repo: github.com/acme/payment-proto
+    role: api-definition
+  - name: payment-docs
+    repo: github.com/acme/payment-docs
+    role: documentation
+    optional: true
+  - name: payment-app
+    repo: github.com/acme/payment-app
+    role: app
+relationships:
+  - from: payment-app
+    to: payment-service
+    type: consumes
+  - from: payment-service
+    to: payment-proto
+    type: implements
+skills:
+  - when: go-review
+    use: go-pr-review@takekazuomi-claude-plugins
+    roles: [source]

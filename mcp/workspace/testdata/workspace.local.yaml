@@ -1,0 +1,3 @@
+overrides:
+  - name: payment-proto
+    revision: feature/api-v2

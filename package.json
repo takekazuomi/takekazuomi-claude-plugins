@@ -1,0 +1,10 @@
+{
+  "name": "takekazuomi-claude-plugins",
+  "private": true,
+  "description": "textlint 実行用。ルールパッケージは textlint と同じ node_modules に置く必要があるため npm で管理する。markdownlint-cli2 は mise.toml の tools で管理する",
+  "devDependencies": {
+    "textlint": "^15.8.0",
+    "textlint-rule-no-kangxi-radicals": "^0.2.2",
+    "textlint-rule-preset-ja-technical-writing": "^12.0.2"
+  }
+}

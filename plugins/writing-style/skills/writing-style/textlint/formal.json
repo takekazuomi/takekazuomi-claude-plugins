@@ -1,0 +1,29 @@
+{
+  "//": "formal（技術文書）用。styles/formal.md の表記・語法に関する規定を機械化する。論理・構成は検査できないので同文書のチェックリストで見る。実測の経緯は docs/skills/writing-style.md を参照",
+  "//why": {
+    "preset-ja-technical-writing": "技術文書向けの標準プリセット。formal.md の対象（Issue・PR・Design Doc・仕様書・設計書・議事録）と一致する",
+    "ja-no-mixed-period": "無効化。formal.md は箇条書きの行末に句点を付けず、地の文には句点を付ける。このルールは両者を区別せず句点の有無を統一させるため、方針と衝突する",
+    "no-exclamation-question-mark": "無効化。未決事項・確認事項を疑問文で書く場面と、議事録の発言引用で疑問符が正当に出る。引用は改変しない",
+    "sentence-length": "既定 100 字を 150 字に緩和。100 字では英文・インラインコード・URL を含む正当な文まで弾く。150 字を超えると一文一アイデアが崩れるので上限は残す",
+    "no-mix-dearu-desumasu": "本文の基準を「である」に指定。formal.md「常体（である調）を基本とする」に対応。文書全体で判定されるため節ごとの混在は区別できない",
+    "no-doubled-joshi": "既定は同じ助詞が 2 文節以内で重複すると error。「AもBも」の並列や離れた位置の重複は自然な日本語なので、隣接する重複に限定し「も」を除外、指摘は warning",
+    "max-comma": "上限は既定の 3 のまま severity を warning に変更。表・コード・英文引用のカンマも数えるため機械判定に任せられない",
+    "max-ten": "上限は既定の 3 のまま severity を warning に変更。長文では読点が 4 つ以上になりうるため、error ではなく推敲の目安にする",
+    "max-kanji-continuous-len": "既定 5 字を 6 字に緩和し warning。専門用語や固有名で 6 字以上の漢字連続が正当に出る。用語が固まったら allow に登録する",
+    "no-kangxi-radicals": "康熙部首（見た目が同じで別コードポイントの漢字）を検出。PDF や Web からのコピペで混入し、検索漏れと表記ゆれの原因になる。formal.md「表記ゆれを避ける」に対応"
+  },
+  "//options": "ルールにオプションを渡すとプリセットの既定値は上書きで消える。severity だけ変える場合も既定値を書き直すこと",
+  "rules": {
+    "preset-ja-technical-writing": {
+      "ja-no-mixed-period": false,
+      "no-exclamation-question-mark": false,
+      "sentence-length": { "max": 150 },
+      "no-mix-dearu-desumasu": { "preferInBody": "である" },
+      "no-doubled-joshi": { "min_interval": 1, "allow": ["も"], "severity": "warning" },
+      "max-comma": { "max": 3, "severity": "warning" },
+      "max-ten": { "max": 3, "severity": "warning" },
+      "max-kanji-continuous-len": { "max": 6, "severity": "warning" }
+    },
+    "no-kangxi-radicals": true
+  }
+}

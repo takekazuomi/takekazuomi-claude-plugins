@@ -1,0 +1,6 @@
+{
+  "name": "workspace",
+  "description": "マルチリポ・ワークスペースの定義・所在解決・検証を行う MCP サーバ",
+  "version": "0.1.0",
+  "author": { "name": "takekazuomi" }
+}

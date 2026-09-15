@@ -1,0 +1,31 @@
+{
+  "//": "casual（ブログ・Zenn・レポート）用。文体ルールは casual.md と衝突するため全て無効化し、表記・文字化けの機械ルールだけを残す",
+  "rules": {
+    "preset-ja-technical-writing": {
+      "sentence-length": false,
+      "max-comma": false,
+      "max-ten": false,
+      "max-kanji-continuous-len": false,
+      "no-mix-dearu-desumasu": false,
+      "ja-no-mixed-period": false,
+      "arabic-kanji-numbers": false,
+      "no-doubled-conjunction": false,
+      "no-doubled-conjunctive-particle-ga": false,
+      "no-double-negative-ja": false,
+      "no-doubled-joshi": false,
+      "no-exclamation-question-mark": false,
+      "ja-no-weak-phrase": false,
+      "ja-no-successive-word": false,
+      "ja-no-redundant-expression": false,
+      "no-dropping-the-ra": true,
+      "ja-no-abusage": true,
+      "no-nfd": true,
+      "no-hankaku-kana": true,
+      "no-invalid-control-character": true,
+      "ja-unnatural-alphabet": true,
+      "no-unmatched-pair": true,
+      "no-zero-width-spaces": true
+    },
+    "no-kangxi-radicals": true
+  }
+}
