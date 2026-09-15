@@ -215,6 +215,9 @@ casual と formal は文体が正反対（砕け↔正確さ優先）。progress
 | node なし・textlint なし | 案内を出して exit 0（正常） | 変更なし |
 | node なし・`node_modules/.bin/textlint` あり | `/usr/bin/env: 'node': No such file or directory`、**rc=127** | node が無い旨を添えて exit 0 |
 | `bc` なし（wordcount.sh） | `bc: command not found` を出しつつ **0.0 枚と誤表示** | bc に依存せず正しく換算 |
+| Windows（Git Bash / MSYS2 / Cygwin）・textlint なし | 導入手順を案内して exit 0 | 導入手順を出さずにスキップ（exit 0）。2026-09-16 変更、Windows 実機では未検証 |
+
+**Windows では textlint を導入しない。** 導入済みの textlint があれば検査し、なければスキップする。`textlint.sh` は `uname -s` が `MINGW*`・`MSYS*`・`CYGWIN*` のとき導入手順を出さない。リポジトリの `mise run lint:text` も同じ方針で、Windows では `setup:node` が `npm ci` を実行しない。
 
 `textlint.sh` は実体の存在だけでなく `--version` の起動可否で判定する。textlint は node スクリプトであり、ファイルがあっても node が無ければ動かないためである。
 
@@ -236,7 +239,8 @@ textlint が見るのは表記と語法だけで、論理・構成・根拠は�
 - **description の変更** → 自動ディスパッチの精度に直結する。種別キーワード（レポート/ブログ/Zenn ⇔ Issue/PR/Design Doc/仕様書/設計書/議事録）を維持し、「会話的短文・コード生成は除外」の但し書きを残す。
 - **チェックリストの追加** → 共通なら common、種別固有なら該当 style の「固有チェックリスト」へ。
 - **共通に置くか迷ったら style 側へ置く**。誤った共通化は、そのスタイルの利用者が気づかないまま品質を下げる。
-- 変更後は `npx markdownlint-cli2 "plugins/writing-style/**/*.md"` でlintを通す（リポジトリ規約）。
+- 変更後は `mise run lint` と `mise run lint:text "plugins/writing-style/**/*.md"` で lint を通す（リポジトリ規約）。Windows ネイティブでの制約は README の「mise タスク」の注意点を参照。
+- **textlint のルールを変える** → `textlint/formal.json`（または `casual.json`）の `rules` と、同じファイルの `//why` を両方直す。`mise run lint:text` もこの `formal.json` を読むため、リポジトリのルートに `.textlintrc` を複製しない。
 
 ## なぜスキル外（docs/）に置くか
 

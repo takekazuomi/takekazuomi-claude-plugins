@@ -1,0 +1,4 @@
+# markdownlint (.markdownlint-cli2.yaml) と対象を揃える
+**/tmp/**
+# 依存
+node_modules/**

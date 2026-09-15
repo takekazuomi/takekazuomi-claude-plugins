@@ -1,5 +1,7 @@
 [tools]
 node = "24"
+# markdownlint は mise で管理する（npm の node_modules に依存させず、Windows ネイティブでも lint を動かすため）
+markdownlint-cli2 = "0.23.2"
 
 [env]
 # 対象スキル一覧。install / uninstall / list が参照する
@@ -60,8 +62,36 @@ done
 
 [tasks.lint]
 quiet = true
-description = "Markdown の lint（markdownlint + textlint）"
-run = [
-  "npx --no-install markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
-  "npx --no-install textlint --config plugins/writing-style/skills/writing-style/textlint/formal.json $(git ls-files '*.md')",
-]
+description = "Markdown の lint（markdownlint）"
+# glob は二重引用符で渡す。sh と cmd の両方でシェル展開されず markdownlint-cli2 が展開する
+run = 'markdownlint-cli2 "**/*.md"'
+
+[tasks.lint-fix]
+quiet = true
+description = "Markdown の lint と自動修正（markdownlint）"
+run = 'markdownlint-cli2 --fix "**/*.md"'
+
+# textlint は本体とルールパッケージが同じ node_modules に居ないと解決できないため、npm で管理する
+[tasks."setup:node"]
+quiet = true
+description = "textlint を npm で導入（package-lock.json に固定。Windows では導入しない）"
+run = "npm ci"
+# Windows では textlint を導入しない。導入済みの node_modules があれば lint:text が使う
+run_windows = "exit /b 0"
+sources = ["package.json", "package-lock.json"]
+outputs = ["node_modules/.package-lock.json"]
+
+# 日本語の推敲支援。既存文書に未修正の指摘が残るため lint の depends には入れない
+# ルールは writing-style スキルの formal 設定を唯一の定義元とし、ルートに .textlintrc を複製しない
+[tasks."lint:text"]
+quiet = true
+description = "日本語文書を textlint で検査（writing-style の formal 設定。引数でファイルを絞れる。Windows では未導入ならスキップ）"
+depends = ["setup:node"]
+usage = 'arg "[files]..." default="**/*.md" help="検査対象（省略時は全 Markdown。除外は .textlintignore）"'
+# set -f: glob は textlint 側で展開する（sh の ** は 1 階層しか見ないため）
+# eval: mise が引数をクォート済みの文字列で渡すため、クォートを剥がす
+# npx は使わない。npm 11 では `npx --no textlint --config ...` の --config を npm 自身が解釈して textlint に届かない
+run = 'set -f; eval "node_modules/.bin/textlint --config plugins/writing-style/skills/writing-style/textlint/formal.json $usage_files"'
+# Windows（cmd）: set -f と eval が使えないため別定義。導入済みなら実行し、未導入ならスキップする
+# メッセージは cmd のコードページに依存しないよう ASCII にする
+run_windows = 'if exist node_modules\.bin\textlint.cmd (node_modules\.bin\textlint.cmd --config plugins\writing-style\skills\writing-style\textlint\formal.json %usage_files%) else (echo lint:text: textlint is not installed, skipped 1>&2)'

@@ -70,6 +70,8 @@ description: >-
    npm i -D textlint textlint-rule-preset-ja-technical-writing textlint-rule-no-kangxi-radicals
    ```
 
+   Windows では textlint を導入しない。導入済みの textlint があれば検査し、なければスキップする（スクリプトも導入手順を案内しない）。
+
    **textlint が見るのは表記と語法だけ**で、論理・構成・根拠は見ない。チェックリストの代わりにはならない。
 
 6. **チェックリスト**：`styles/common.md` の共通チェックリストと、該当スタイルの固有チェックリストを順に確認する

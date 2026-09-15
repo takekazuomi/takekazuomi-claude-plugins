@@ -51,8 +51,22 @@ mise run install
 | `mise run install`   | 全スキルをインストール（実行した作業ツリーへ張り替え） |
 | `mise run uninstall` | 全スキルをアンインストール         |
 | `mise run list`      | インストール状態を表示             |
-| `mise run lint`      | Markdown の lint（markdownlint + textlint） |
+| `mise run lint`      | Markdown の lint（markdownlint） |
+| `mise run lint-fix`  | Markdown の lint と自動修正（markdownlint） |
+| `mise run lint:text` | 日本語文書の textlint 検査（writing-style の formal 設定。引数でファイルを絞れる） |
+| `mise run setup:node` | textlint を npm で導入（`lint:text` が自動で実行。Windows では導入しない） |
 | `mise tasks`         | タスク一覧を表示                   |
+
+注意点:
+
+- **前提は mise のみ。** node と markdownlint-cli2 は `mise.toml` の `[tools]` から、textlint は `setup:node`（`npm ci`、`package-lock.json` に固定）から自動で導入する。未信頼の作業ツリーでは、先に `mise trust` を実行する
+- **管理方式が 2 つある。** markdownlint-cli2 は mise の tools、textlint は npm で管理する。textlint のルールパッケージは textlint 本体と同じ `node_modules` に置く必要があり、mise の npm backend では解決できないため
+- **`lint:text` は `lint` に含めない。** 既存文書に未修正の textlint の指摘が残っているため、推敲支援として個別に実行する
+- **Windows ネイティブ（cmd）では一部のタスクが動かない。** mise は Windows のタスクを `cmd /c` で実行する
+  - `install`・`uninstall`・`list`：sh 前提のため動かない。WSL か Git Bash で実行する
+  - `lint`・`lint-fix`：cmd でも動く定義にしている
+  - `lint:text`：Unix 用の定義（`set -f`・`eval`）は cmd で動かないため、Windows 用の別定義（`run_windows`）を使う。Windows では textlint を導入せず、`node_modules\.bin\textlint.cmd` があれば実行し、なければスキップする
+  - Windows での実行は未検証
 
 ## 使い方
 

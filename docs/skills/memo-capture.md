@@ -63,4 +63,4 @@ root: ~/ghq/github.com/takekazuomi/memo
 - **保存先の探索順を変える** → SKILL.md の「保存先の解決」の表と `resolve_memo_root()` の両方を直す。`workspace-mcp` の `resolve.go` と乖離させる場合は理由をここに残す
 - **カテゴリを増やす** → 「手順」の判定表に 1 行追加し、`INDEX.md` の雛形にも節を足す。増やす前に `tags` で足りないかを検討する
 - **description の変更** → 自動ディスパッチの精度に直結する。発火語（「メモしておいて」「メモに残す」）と「自動で提案はしない」の但し書きを維持する
-- 変更後は `npx markdownlint-cli2 "plugins/memo-capture/**/*.md"` で lint を通す（リポジトリ規約）
+- 変更後は `mise run lint` と `mise run lint:text "plugins/memo-capture/**/*.md"` で lint を通す（リポジトリ規約）。Windows ネイティブでの制約は README の「mise タスク」の注意点を参照

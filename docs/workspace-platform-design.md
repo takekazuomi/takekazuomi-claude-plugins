@@ -2,7 +2,7 @@
 
 対象リポジトリ: `github.com/takekazuomi/takekazuomi-claude-plugins`
 対象: Claude Code 専用のコーディングエージェント / 最小から始める
-最終更新: 2026-06-23
+最終更新: 2026-09-16
 
 一連の設計検討の結論をまとめた文書。**確認済みの事実**（URL付き）、**推論**、**決定/推奨**を区別する。反証・限界は脚注に逃さず本文に残す。
 
@@ -111,7 +111,7 @@
 | `workspace.local.yaml` | Overlay（revision のローカル一時上書き）の例 | YAML | 各自のローカル（`.gitignore`） |
 | `workspace.schema.json` | 構造検証（型・必須・命名）＋エディタ補完 | JSON Schema 2020-12 | `workspaces/workspace.schema.json` |
 | `workspace-mcp`（バイナリ） | **唯一の Go 成果物**。MCP サーバ（知識層）＋ `validate` サブコマンド（CIゲート）＋ `--print-paths`（起動ブートストラップ）を兼ねる | Go（公式 go-sdk + yaml.v3） | ソース: `mcp/`／配布: GitHub Releases |
-| `internal/workspace`（パッケージ） | モデルと検証ロジックの共有実装。MCP ツール `validate_workspace` と `validate` サブコマンドが共用 | Go | `mcp/internal/workspace/` |
+| `pkg/workspace`（パッケージ） | モデル・読み込み・検証・所在解決の共有実装。MCP ツールと `validate` サブコマンド・`--print-paths` が共用 | Go | `mcp/pkg/workspace/` |
 
 各要素は同じ `workspace.yaml` モデルを共有する。検証が通ったマニフェストを MCP が読み、ghq で所在を解決して Claude に供給する。
 
@@ -173,7 +173,7 @@ overrides:
 mcp/                          # ソースの真実の源（Go モジュール）。go install の対象
   go.mod
   workspace/                  # MCP サーバ本体（main）
-  internal/workspace/         # モデル・検証ロジック（MCP ツールと validate が共用）
+  pkg/workspace/              # モデル・読み込み・検証・所在解決（MCP ツールと validate・--print-paths が共用）
 plugins/workspace/            # marketplace 配布物。軽量テキストのみ（バイナリを同梱せず clone を軽く保つ）
   .claude-plugin/plugin.json
   .mcp.json                   # command: ${CLAUDE_PLUGIN_DATA}/bin/workspace-mcp
@@ -270,7 +270,7 @@ CI ゲートは `workspace-mcp validate <file>` サブコマンドを使う（MC
 
 ## 10. 次の一手（候補）
 
-1. この MCP を `takekazuomi-claude-plugins` に **`workspace` プラグインとして同梱**（`.mcp.json` ＋ ビルド手順 ＋ 既存スキルとの結線）。
+1. ~~この MCP を `takekazuomi-claude-plugins` に **`workspace` プラグインとして同梱**（`.mcp.json` ＋ ビルド手順 ＋ 既存スキルとの結線）。~~ **実施済み**（[PR #16](https://github.com/takekazuomi/takekazuomi-claude-plugins/pull/16)）。`plugins/workspace/`（`.mcp.json`・`SessionStart` フック・SKILL.md）として同梱し、ビルドと動作確認の手順は `mcp/README.md` に記載した。既存スキルとの結線は `workspace_info` がスキル束縛を返す段階までで、ロール・タスクからスキルを引く `find_skill` は 3. で扱う。
 2. `workspace init` 相当の作成支援（対話でロール宣言→`workspace.yaml` 生成→commit）。
 3. MCP 拡張: Overlay の worktree 自動作成（`setup_overlay`）と `resolve_paths` の worktree 対応（§5）、`find_skill`（ロール/タスクからスキルを引く）。
 4. CI 整備: `workspace-mcp validate`（参照整合）＋ `check-jsonschema`（構造）を PR で実行。リリース CI（goreleaser でクロスコンパイル → GitHub Releases）を組み、`SessionStart` フックの取得経路を確立する。

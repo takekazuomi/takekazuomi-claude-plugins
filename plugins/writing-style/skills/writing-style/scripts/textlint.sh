@@ -58,9 +58,21 @@ usage() {
     echo "Usage: $0 <casual|formal> <file>... [textlint のオプション]" >&2
 }
 
+# Windows（Git Bash / MSYS2 / Cygwin）かどうか
+is_windows() {
+    case "$(uname -s 2>/dev/null)" in
+        MINGW* | MSYS* | CYGWIN*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 # 何が足りないかを見て、導入手順を提案する
+# Windows では導入を案内しない。導入済みの textlint があるときだけ検査する
 suggest_install() {
     echo "textlint を実行できないため機械検査をスキップする。" >&2
+    if is_windows; then
+        return
+    fi
     echo "" >&2
     echo "検査したい場合は、対象プロジェクトのルートで次を実行すること:" >&2
 
