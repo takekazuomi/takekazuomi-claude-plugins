@@ -63,14 +63,7 @@ description: >-
    bash ~/.claude/skills/writing-style/scripts/textlint.sh casual path/to/draft.md
    ```
 
-   未導入なら、検査対象プロジェクトのルートで次を実行する。何が足りないかはスクリプトが判定して提案する。
-
-   ```bash
-   mise use node@24    # node が無い場合のみ
-   npm i -D textlint textlint-rule-preset-ja-technical-writing textlint-rule-no-kangxi-radicals
-   ```
-
-   Windows では textlint を導入しない。導入済みの textlint があれば検査し、なければスキップする（スクリプトも導入手順を案内しない）。
+   利用者の環境にある textlint を使う。textlint の導入や `package.json`・`mise.toml` の変更はしない。textlint が無い、ルールを読み込めない、本体の版が違うといった場合、スクリプトは警告と同梱のルール設定（`textlint/casual.json`・`formal.json`）の所在を表示する。警告はそのまま利用者に伝え、同梱の設定を参考にしてもらう。
 
    **textlint が見るのは表記と語法だけ**で、論理・構成・根拠は見ない。チェックリストの代わりにはならない。
 

@@ -1,7 +1,7 @@
 {
   "name": "writing-style",
   "description": "日本語文書の文体適用（casual＝ブログ/記事、formal＝技術文書）",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "takekazuomi"
   }

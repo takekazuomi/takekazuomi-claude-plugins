@@ -2,6 +2,9 @@
 node = "24"
 # markdownlint は mise で管理する（npm の node_modules に依存させず、Windows ネイティブでも lint を動かすため）
 markdownlint-cli2 = "0.23.2"
+# test:static が使う。jq は登録の整合チェック、shellcheck は同梱スクリプトの検査
+jq = "1.8.2"
+shellcheck = "0.11.0"
 
 [env]
 # 対象スキル一覧。install / uninstall / list が参照する
@@ -70,6 +73,22 @@ run = 'markdownlint-cli2 "**/*.md"'
 quiet = true
 description = "Markdown の lint と自動修正（markdownlint）"
 run = 'markdownlint-cli2 --fix "**/*.md"'
+
+# L0 静的検査。LLM を呼ばない
+# markdownlint は既存文書に未修正の指摘が残るため含めない（lint で個別に実行する）
+[tasks."test:static"]
+quiet = true
+description = "静的検査（plugin validate --strict・スキル登録の整合・shellcheck）"
+run = [
+  # `validate .` はマーケットプレイスのマニフェストだけを見るため、プラグインは個別に検証する。成功時の出力は捨てる
+  '''
+for target in . plugins/*/; do
+  out="$(claude plugin validate --strict "$target" 2>&1)" || { echo "$out" >&2; exit 1; }
+done
+''',
+  "scripts/check-registration.sh",
+  "find plugins scripts -name '*.sh' -exec shellcheck {} +",
+]
 
 # textlint は本体とルールパッケージが同じ node_modules に居ないと解決できないため、npm で管理する
 [tasks."setup:node"]

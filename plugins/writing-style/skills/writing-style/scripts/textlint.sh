@@ -8,19 +8,18 @@
 #
 # 仕様:
 #   - スタイル別の設定は同ディレクトリ階層の ../textlint/<style>.json を使う
-#   - textlint 本体と ルールパッケージは「検査対象プロジェクト側」に入れる。
-#     このスキルは設定ファイルだけを配る（node_modules は同梱しない）
-#   - textlint が見つからない場合は導入コマンドを案内し、終了コード0で抜ける。
-#     機械検査は任意の工程であり、レビュー手順全体を止めない
-#
-# 検査対象プロジェクトでの導入:
-#   mise use node@24    # node が無い場合。mise が nodejs を用意する
-#   npm i -D textlint textlint-rule-preset-ja-technical-writing textlint-rule-no-kangxi-radicals
+#   - このスキルは設定ファイルだけを配る。textlint 本体とルールは導入しない・導入を案内しない
+#     （利用者の環境を変えないため。mise も前提にしない）
+#   - 利用者の環境にある textlint を使う。プロジェクトローカル（./node_modules/.bin）を優先する
+#   - 次の場合は警告を出し、同梱のルール設定を参考として案内する。機械検査は任意の工程であり、
+#     レビュー手順全体を止めないため、検査できなかった場合も終了コード 0 で抜ける
+#       - textlint が無い（または node が無く起動できない）: 検査をスキップする
+#       - 本体のメジャー版が想定（TEXTLINT_MAJOR）と違う: 警告したうえで検査する
+#       - ルールを読み込めない: 検査をスキップする
 #
 # 注意:
-#   textlint はルールをカレントディレクトリの node_modules から解決する。
-#   設定ファイルがプロジェクト外にあっても解決できる（検証済み）が、
-#   実行はかならず検査対象プロジェクトのルートで行うこと。
+#   textlint はルールを本体の設置場所から解決する（カレントディレクトリではない）。
+#   本体とルールが同じ node_modules に無いと "No rules found" になる。
 
 set -euo pipefail
 
@@ -31,9 +30,10 @@ die() {
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
-readonly CONFIG_DIR="${SCRIPT_DIR}/../textlint"
-readonly NODE_VERSION="24"
-readonly NPM_PACKAGES="textlint textlint-rule-preset-ja-technical-writing textlint-rule-no-kangxi-radicals"
+CONFIG_DIR="$(cd -- "${SCRIPT_DIR}/../textlint" && pwd)"
+readonly CONFIG_DIR
+# 開発側（リポジトリの package.json）で固定している textlint のメジャー版
+readonly TEXTLINT_MAJOR="15"
 
 # textlint の実体を探す。プロジェクトローカルを優先する。
 # textlint は node スクリプトなので、node が無ければ実体があっても動かない。
@@ -58,37 +58,29 @@ usage() {
     echo "Usage: $0 <casual|formal> <file>... [textlint のオプション]" >&2
 }
 
-# Windows（Git Bash / MSYS2 / Cygwin）かどうか
-is_windows() {
-    case "$(uname -s 2>/dev/null)" in
-        MINGW* | MSYS* | CYGWIN*) return 0 ;;
-        *) return 1 ;;
-    esac
+# 同梱のルール設定の所在を案内する
+show_bundled_config() {
+    echo "このスキルには textlint のルール設定が組み込まれている。導入や設定の参考にすること:" >&2
+    echo "  ${CONFIG_DIR}/casual.json" >&2
+    echo "  ${CONFIG_DIR}/formal.json" >&2
+    echo "  必要なルール: textlint-rule-preset-ja-technical-writing・textlint-rule-no-kangxi-radicals（textlint 本体と同じ node_modules に置く）" >&2
 }
 
-# 何が足りないかを見て、導入手順を提案する
-# Windows では導入を案内しない。導入済みの textlint があるときだけ検査する
-suggest_install() {
-    echo "textlint を実行できないため機械検査をスキップする。" >&2
-    if is_windows; then
-        return
+# 本体のメジャー版が想定と違えば警告する（検査は続ける）
+warn_version() {
+    local version major
+    version="$("$1" --version 2>/dev/null || true)"
+    version="${version#v}"
+    major="${version%%.*}"
+    if [ "$major" != "$TEXTLINT_MAJOR" ]; then
+        echo "警告: textlint ${version:-不明} を検出した。想定はメジャー版 ${TEXTLINT_MAJOR}。結果が想定と異なる場合がある。" >&2
+        show_bundled_config
+        echo "" >&2
     fi
-    echo "" >&2
-    echo "検査したい場合は、対象プロジェクトのルートで次を実行すること:" >&2
-
-    if ! command -v node >/dev/null 2>&1; then
-        if command -v mise >/dev/null 2>&1; then
-            echo "  mise use node@${NODE_VERSION}" >&2
-        else
-            echo "  # node が無い。mise の導入を推奨する: https://mise.jdx.dev/" >&2
-            echo "  mise use node@${NODE_VERSION}" >&2
-        fi
-    fi
-    echo "  npm i -D ${NPM_PACKAGES}" >&2
 }
 
 main() {
-    local style config textlint_bin
+    local style config textlint_bin output rc
 
     style="${1:-}"
     case "$style" in
@@ -110,11 +102,23 @@ main() {
 
     textlint_bin="$(find_textlint)"
     if [ -z "$textlint_bin" ]; then
-        suggest_install
+        echo "警告: textlint を実行できない（未導入、または node が無い）ため機械検査をスキップする。" >&2
+        show_bundled_config
         exit 0
     fi
 
-    "$textlint_bin" --config "$config" "$@"
+    warn_version "$textlint_bin"
+
+    # 指摘ありとルール読み込み失敗はどちらも非 0 で返るため、出力で見分ける
+    rc=0
+    output="$("$textlint_bin" --config "$config" "$@" 2>&1)" || rc=$?
+    if [ "$rc" -ne 0 ] && printf '%s\n' "$output" | grep -qE "No rules found|Failed to load textlint's module"; then
+        echo "警告: textlint のルールを読み込めないため機械検査をスキップする。" >&2
+        show_bundled_config
+        exit 0
+    fi
+    [ -z "$output" ] || printf '%s\n' "$output"
+    exit "$rc"
 }
 
 main "$@"

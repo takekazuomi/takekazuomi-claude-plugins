@@ -179,14 +179,16 @@ casual と formal は文体が正反対（砕け↔正確さ優先）。progress
 | 案 | 利用者の手間 | 作者の運用 | 判定 |
 | --- | --- | --- | --- |
 | npm の shareable config を公開 | 小（2パッケージ） | npm publish の運用が増える | 将来の移行先 |
-| 設定のみ同梱・ルールは利用者が導入 | 中（`npm i -D`） | なし | **採用** |
+| 設定のみ同梱・ルールは利用者が導入 | 中（`npm i -D`。2026-09-19 以降は案内しない） | なし | **採用** |
 | スキル配下へ自己完結インストール | 小 | symlink とプラグイン更新で壊れる | 却下 |
 
 **`npx --package` 方式は実測で失敗した。** プリセットを `--package` で渡しても `No rules found, textlint hasn't done anything` が返る。npx の一時ディレクトリと textlint のルール解決パスが噛み合わないためである。
 
 したがって「利用者に何もインストールさせない」案は成立しない。
 
-一方、**プロジェクト外にある設定を `--config` で指定しても、ルールは実行時のカレントディレクトリの `node_modules` から解決される**ことを実測で確認した。これが本方式の成立条件である。`textlint.sh` はこの前提に立つため、**検査対象プロジェクトのルートで実行する**必要がある。
+一方、**プロジェクト外にある設定を `--config` で指定しても、ルールは textlint 本体の設置場所から解決される**。これが本方式の成立条件である。本体とルールが同じ `node_modules` にあれば、実行時のカレントディレクトリは解決に関係しない。2026-09-19 に、`node_modules` の無いディレクトリからリポジトリの `node_modules/.bin/textlint` を実行し、ルールが読み込まれて指摘が出ることを確認した。
+
+当初（2026-09-08）は「ルールはカレントディレクトリの `node_modules` から解決される」と記載していたが、これは誤りだった。devDependencies で導入する通常構成では本体の設置場所とカレントディレクトリが一致するため、区別できていなかった。カレントディレクトリが効くのは、`textlint.sh` が textlint 本体を探す段階だけである。`./node_modules/.bin/textlint` を優先して探すため、プロジェクトローカルの textlint を使うには、検査対象プロジェクトのルートで実行する。
 
 利用者が増えて `npm i -D` の手間が問題になったら、同梱の JSON をそのまま config パッケージの中身にして shareable config へ移行できる。
 
@@ -217,11 +219,19 @@ casual と formal は文体が正反対（砕け↔正確さ優先）。progress
 | `bc` なし（wordcount.sh） | `bc: command not found` を出しつつ **0.0 枚と誤表示** | bc に依存せず正しく換算 |
 | Windows（Git Bash / MSYS2 / Cygwin）・textlint なし | 導入手順を案内して exit 0 | 導入手順を出さずにスキップ（exit 0）。2026-09-16 変更、Windows 実機では未検証 |
 
-**Windows では textlint を導入しない。** 導入済みの textlint があれば検査し、なければスキップする。`textlint.sh` は `uname -s` が `MINGW*`・`MSYS*`・`CYGWIN*` のとき導入手順を出さない。リポジトリの `mise run lint:text` も同じ方針で、Windows では `setup:node` が `npm ci` を実行しない。
+**Windows では textlint を導入しない。** 導入済みの textlint があれば検査し、なければスキップする。2026-09-19 以降は全環境で導入手順を案内しないため、`textlint.sh` の Windows 判定（`uname -s`）は外した。リポジトリの `mise run lint:text` は開発用で、Windows では `setup:node` が `npm ci` を実行しない。
 
 `textlint.sh` は実体の存在だけでなく `--version` の起動可否で判定する。textlint は node スクリプトであり、ファイルがあっても node が無ければ動かないためである。
 
-**不足しているものに応じて導入手順を出し分ける。** 利用環境には mise がある前提とし、node が無ければ `mise use node@24` を、textlint が無ければ `npm i -D` を提案する。mise 自体が無い場合だけ、その導入先 URL を添える。node が入っていれば npm の行だけを出す。
+**利用時は環境を変えず、警告だけ出す（2026-09-19 方針）。** 開発は mise を使うが、利用時は mise を前提にしない。スキルは textlint の導入も、導入手順（`mise use`・`npm i -D`）の案内もしない。`mise use` は最寄りの `mise.toml` を書き換え、`npm i -D` は検査対象プロジェクトの `package.json` を書き換えるためである。`textlint.sh` は次の場合に警告を出し、同梱のルール設定（`textlint/casual.json`・`formal.json`）の所在と必要なルールパッケージ名を、参考として表示する。
+
+| 状況 | 挙動 |
+| --- | --- |
+| textlint が無い、または node が無く起動できない | 警告してスキップ（exit 0） |
+| 本体のメジャー版が `TEXTLINT_MAJOR`（15）と違う | 警告したうえで検査する |
+| ルールを読み込めない（`No rules found`・`Failed to load textlint's module`） | 警告してスキップ（exit 0） |
+
+指摘ありとルール読み込み失敗は、どちらも終了コード 1 で返り区別できない。そのため出力の文言で見分ける。版の判定は本体のメジャー版だけとし、ルールの版は見ない。`TEXTLINT_MAJOR` はリポジトリの `package.json` の textlint の版と合わせて更新する。
 
 `wordcount.sh` の換算は bash の整数演算に置き換え、`bc` への依存を外した。`bc` は最小構成のコンテナに無いことがあり、欠けると**黙って誤った数値**を出していた。`wc -m` のロケール問題と同じ失敗の型である。外部コマンドは `sed`・`tr`・`wc`・`grep`・`locale` のみになった。
 

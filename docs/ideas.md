@@ -21,3 +21,7 @@
 - それぞれのコメント（コミットメッセージ・PR 本文）は writing style spec に従って `./tmp/` に作成する
 - この仕組みをスキルで実現するのが良いか、別の手段（hook 等）が良いかを検討する
 - → 検討メモ: [commit-pr-approval-design.md](./commit-pr-approval-design.md)
+
+## 4. writing style にGFM準拠を入れる
+
+- 脚注、NoteなどはGFMに準拠する

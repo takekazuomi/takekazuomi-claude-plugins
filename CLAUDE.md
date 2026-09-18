@@ -18,7 +18,7 @@ Claude Code用のスキル集。プロジェクトに導入しチームで共有
 4. `.claude-plugin/marketplace.json` の `plugins` 配列にエントリ追加（`name`・`source`・`description`）
 5. README.mdのスキル一覧テーブルと構造ツリーに追加
 6. `mise.toml` の `SKILLS` にスキル名を追加
-7. 検証: `claude plugin validate .`、`mise run install` でインストール確認
+7. 検証: `mise run test:static`（`claude plugin validate --strict`・1〜6 の登録の整合・shellcheck）、`mise run install` でインストール確認
 
 ## スキル命名規則
 
