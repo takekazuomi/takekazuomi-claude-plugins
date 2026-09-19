@@ -1,0 +1,8 @@
+# リポジトリ直下の .markdownlint-cli2.yaml の config と同じ規則に、MD041 の無効化を加える
+# （サブディレクトリの設定は直下の設定を上書きするため、同じ規則を書き直している）
+MD013: false
+MD060: false
+MD024:
+  siblings_only: true
+# eval の prompt.md と grader の本文は、評価に渡すテキストそのものなので見出しで始められない
+MD041: false

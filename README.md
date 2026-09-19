@@ -55,18 +55,29 @@ mise run install
 | `mise run lint-fix`  | Markdown の lint と自動修正（markdownlint） |
 | `mise run lint:text` | 日本語文書の textlint 検査（writing-style の formal 設定。引数でファイルを絞れる） |
 | `mise run setup:node` | textlint を npm で導入（`lint:text` が自動で実行。Windows では導入しない） |
+| `mise run test:static` | 静的検査（`claude plugin validate --strict`・スキル登録の整合・shellcheck）。Claude Code の CLI が必要 |
 | `mise tasks`         | タスク一覧を表示                   |
 
 注意点:
 
-- **前提は mise のみ。** node と markdownlint-cli2 は `mise.toml` の `[tools]` から、textlint は `setup:node`（`npm ci`、`package-lock.json` に固定）から自動で導入する。未信頼の作業ツリーでは、先に `mise trust` を実行する
+- **前提は mise のみ。** node・markdownlint-cli2・jq・shellcheck は `mise.toml` の `[tools]` から、textlint は `setup:node`（`npm ci`、`package-lock.json` に固定）から自動で導入する。未信頼の作業ツリーでは、先に `mise trust` を実行する
 - **管理方式が 2 つある。** markdownlint-cli2 は mise の tools、textlint は npm で管理する。textlint のルールパッケージは textlint 本体と同じ `node_modules` に置く必要があり、mise の npm backend では解決できないため
 - **`lint:text` は `lint` に含めない。** 既存文書に未修正の textlint の指摘が残っているため、推敲支援として個別に実行する
 - **Windows ネイティブ（cmd）では一部のタスクが動かない。** mise は Windows のタスクを `cmd /c` で実行する
-  - `install`・`uninstall`・`list`：sh 前提のため動かない。WSL か Git Bash で実行する
+  - `install`・`uninstall`・`list`・`test:static`：sh 前提のため動かない。WSL か Git Bash で実行する
   - `lint`・`lint-fix`：cmd でも動く定義にしている
   - `lint:text`：Unix 用の定義（`set -f`・`eval`）は cmd で動かないため、Windows 用の別定義（`run_windows`）を使う。Windows では textlint を導入せず、`node_modules\.bin\textlint.cmd` があれば実行し、なければスキップする
   - Windows での実行は未検証
+
+### 開発と利用での mise の扱い
+
+開発は mise を使い、利用（配布したスキルの実行）は mise を前提にしない。スキルは利用者の環境を変えない。
+
+- **`mise.toml` は開発用で、配布先には届かない。** `/plugin install` で入るのは `plugins/<name>/` 配下だけ。スキルのスクリプトは `[tools]` のツールや `[env]` の値（`SKILLS` など）を前提にしない
+- **スキルは依存を導入せず、導入手順も案内しない。** `mise use` は最寄りの `mise.toml` を、`npm i -D` は利用者の `package.json` を書き換えるため。依存が無い、または版が違うときは警告だけを出し、同梱の設定を参考として示す。任意の工程は exit 0 でスキップする（例: writing-style の `textlint.sh`）
+- **開発時のスクリプトは `mise exec` か `mise run` で呼ぶ。** `mise activate` は利用者によって有効な範囲が違うため前提にしない。どちらも `mise.toml` の `[env]` を読み込み、呼び出し元で設定した同名の環境変数を上書きする
+- **`mise trust` を自動実行しない。** 未信頼の `mise.toml` があると、非対話の実行（Claude Code の Bash など）は確認待ちで止まるか失敗する。信頼の判断は利用者に任せる
+- **`mise.lock` と `.mise/locks/` をコミットする。** lockfile を有効にしていると `mise run` 時に生成される。npm backend のツール（markdownlint-cli2）の依存は `.mise/locks/` に置かれ、`mise.lock` が digest 付きで参照するため、両方そろえて管理する
 
 ## 使い方
 
@@ -123,6 +134,8 @@ takekazuomi-claude-plugins/
 │   └── skills/
 │       ├── memo-capture.md             # memo-captureスキルの保守ガイド
 │       └── writing-style.md            # writing-styleスキルの保守ガイド
+├── scripts/                            # リポジトリの検査スクリプト
+│   └── check-registration.sh           # スキル登録の整合チェック（test:static）
 ├── mise.toml                           # node のバージョンと開発タスク
 ├── CLAUDE.md
 └── README.md
